@@ -1,0 +1,24 @@
+{
+  "name": "fishbook",
+  "version": "1.0.0",
+  "description": "**Et XP-projekt i Node.js / Express / MongoDB**",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AleksyLeciejewski/FishBook.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AleksyLeciejewski/FishBook/issues"
+  },
+  "homepage": "https://github.com/AleksyLeciejewski/FishBook#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.19.4"
+  }
+}
