@@ -1,0 +1,185 @@
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Main Content -->
+    <div class="lg:col-span-3 space-y-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to FishBook</h1>
+            <p class="text-gray-600 mb-6">Connect with fellow anglers, share your catches, and plan your next fishing adventure.</p>
+            
+            <% if (!locals.currentUser) { %>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="/auth/register" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300">
+                        Join Now
+                    </a>
+                    <a href="/auth/login" class="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-3 px-6 rounded-lg text-center transition duration-300">
+                        Sign In
+                    </a>
+                </div>
+            <% } else { %>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <a href="/catches/new" class="bg-white border-2 border-blue-100 rounded-lg p-6 hover:shadow-md transition duration-300">
+                        <div class="text-blue-600 text-4xl mb-4">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Log a Catch</h3>
+                        <p class="text-gray-600">Share your latest fishing success with the community.</p>
+                    </a>
+                    
+                    <a href="/trips/new" class="bg-white border-2 border-blue-100 rounded-lg p-6 hover:shadow-md transition duration-300">
+                        <div class="text-blue-600 text-4xl mb-4">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Plan a Trip</h3>
+                        <p class="text-gray-600">Organize a fishing trip and invite others to join.</p>
+                    </a>
+                    
+                    <a href="/explore" class="bg-white border-2 border-blue-100 rounded-lg p-6 hover:shadow-md transition duration-300">
+                        <div class="text-blue-600 text-4xl mb-4">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Explore</h3>
+                        <p class="text-gray-600">Discover fishing spots and connect with other anglers.</p>
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <!-- Weather Sidebar -->
+    <div class="lg:col-span-1">
+        <%- include('partials/weather-sidebar', { weather: weather }) %>
+    </div>
+</div>
+
+<!-- Latest Catches -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Recent Catches</h2>
+        <a href="/catches" class="text-blue-600 hover:underline">View All</a>
+    </div>
+    
+    <% if (catches && catches.length > 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% catches.forEach(catchItem => { %>
+                <div class="border rounded-lg overflow-hidden hover:shadow-md transition duration-300">
+                    <div class="h-48 bg-gray-200 overflow-hidden">
+                        <img src="<%= catchItem.image || '/images/default-catch.jpg' %>" 
+                             alt="<%= catchItem.species %>" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold text-lg"><%= catchItem.species %></h3>
+                                <p class="text-gray-600 text-sm">
+                                    <i class="fas fa-weight-hanging mr-1"></i>
+                                    <%= catchItem.weight %> kg
+                                </p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                <%= catchItem.location.name %>
+                            </span>
+                        </div>
+                        <div class="mt-3 flex items-center text-sm text-gray-500">
+                            <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
+                                 alt="<%= catchItem.user.username %>" 
+                                 class="w-6 h-6 rounded-full mr-2">
+                            <span><%= catchItem.user.username %></span>
+                            <span class="mx-1">•</span>
+                            <span><%= new Date(catchItem.dateCaught).toLocaleDateString() %></span>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="text-center py-8 text-gray-500">
+            <i class="fas fa-fish text-4xl mb-3 text-gray-300"></i>
+            <p>No catches yet. Be the first to share your catch!</p>
+            <% if (locals.currentUser) { %>
+                <a href="/catches/new" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
+                    Share Your Catch
+                </a>
+            <% } else { %>
+                <a href="/auth/register" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
+                    Join Now to Share
+                </a>
+            <% } %>
+        </div>
+    <% } %>
+</div>
+
+<!-- Upcoming Trips -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Upcoming Trips</h2>
+        <a href="/trips" class="text-blue-600 hover:underline">View All</a>
+    </div>
+    
+    <% if (trips && trips.length > 0) { %>
+        <div class="space-y-4">
+            <% trips.forEach(trip => { %>
+                <div class="border rounded-lg p-4 hover:shadow-md transition duration-300">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                        <div class="mb-3 sm:mb-0">
+                            <h3 class="font-semibold text-lg">
+                                <a href="/trips/<%= trip._id %>" class="hover:underline"><%= trip.title %></a>
+                            </h3>
+                            <div class="flex items-center text-sm text-gray-600 mt-1">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span><%= trip.location.name %></span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:items-end">
+                            <div class="text-sm text-gray-600">
+                                <i class="far fa-calendar-alt mr-1"></i>
+                                <%= new Date(trip.startDate).toLocaleDateString() %> - 
+                                <%= new Date(trip.endDate).toLocaleDateString() %>
+                            </div>
+                            <div class="mt-1">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                    <%= trip.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : 
+                                       trip.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
+                                       trip.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                       'bg-red-100 text-red-800' %>">
+                                    <%= trip.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between">
+                        <div class="flex -space-x-2">
+                            <% trip.participants.slice(0, 5).forEach(participant => { %>
+                                <img src="<%= participant.user.profilePicture || '/images/default-avatar.png' %>" 
+                                     alt="<%= participant.user.username %>" 
+                                     class="w-8 h-8 rounded-full border-2 border-white"
+                                     title="<%= participant.user.username %>">
+                            <% }); %>
+                            <% if (trip.participants.length > 5) { %>
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-xs font-medium">
+                                    +<%= trip.participants.length - 5 %>
+                                </span>
+                            <% } %>
+                        </div>
+                        <a href="/trips/<%= trip._id %>" class="text-blue-600 hover:underline text-sm">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="text-center py-8 text-gray-500">
+            <i class="fas fa-calendar-alt text-4xl mb-3 text-gray-300"></i>
+            <p>No upcoming trips. Plan your next fishing adventure!</p>
+            <% if (locals.currentUser) { %>
+                <a href="/trips/new" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
+                    Create a Trip
+                </a>
+            <% } else { %>
+                <a href="/auth/register" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
+                    Join Now to Plan
+                </a>
+            <% } %>
+        </div>
+    <% } %>
+</div>

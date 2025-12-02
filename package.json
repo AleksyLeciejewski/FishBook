@@ -1,28 +1,51 @@
 {
   "name": "fishbook",
   "version": "1.0.0",
-  "description": "**Et XP-projekt i Node.js / Express / MongoDB**",
+  "description": "A social platform for anglers to share catches and organize fishing trips",
   "main": "app.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest --watchAll"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AleksyLeciejewski/FishBook.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "fishing",
+    "social",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Team FishBook",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AleksyLeciejewski/FishBook/issues"
   },
   "homepage": "https://github.com/AleksyLeciejewski/FishBook#readme",
   "dependencies": {
-    "express": "^5.1.0",
-    "mongoose": "^8.19.4"
+    "axios": "^1.13.2",
+    "bcryptjs": "^2.4.3",
+    "connect-mongo": "^5.0.0",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.5.2",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
+    "fs-extra": "^11.3.2",
+    "jsonwebtoken": "^9.0.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^7.0.3",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "jest": "^30.2.0",
-    "supertest": "^7.1.4"
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
   }
 }
