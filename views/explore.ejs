@@ -1,0 +1,85 @@
+<%- include('partials/header', { title: 'Explore Fishing Spots - FishBook' }) %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Explore Fishing Spots</h1>
+    
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/explore" method="GET" class="row g-3">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               name="q" 
+                               placeholder="Search by name, location, or description..." 
+                               value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+                               aria-label="Search fishing spots">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="type" class="form-select form-select-lg">
+                        <option value="">All Types</option>
+                        <option value="gratis" <%= typeof selectedType !== 'undefined' && selectedType === 'gratis' ? 'selected' : '' %>>Free</option>
+                        <option value="betalings" <%= typeof selectedType !== 'undefined' && selectedType === 'betalings' ? 'selected' : '' %>>Paid</option>
+                        <option value="privat" <%= typeof selectedType !== 'undefined' && selectedType === 'privat' ? 'selected' : '' %>>Private</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <% if (typeof spots !== 'undefined' && spots.length > 0) { %>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <% spots.forEach(spot => { %>
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= spot.name %></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <% if (spot.type === 'gratis') { %>
+                                    <span class="badge bg-success">Free</span>
+                                <% } else if (spot.type === 'betalings') { %>
+                                    <span class="badge bg-warning text-dark">Paid</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">Private</span>
+                                <% } %>
+                            </h6>
+                            <% if (spot.description) { %>
+                                <p class="card-text text-muted"><%= spot.description.length > 150 ? spot.description.substring(0, 150) + '...' : spot.description %></p>
+                            <% } %>
+                            <% if (spot.location && spot.location.lat && spot.location.lng) { %>
+                                <div class="mt-3">
+                                    <a href="https://www.google.com/maps?q=<%= spot.location.lat %>,<%= spot.location.lng %>" 
+                                       target="_blank" 
+                                       class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-map-marker-alt me-2"></i>View on Map
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">
+                                <% if (spot.updatedAt) { %>
+                                    Updated <%= new Date(spot.updatedAt).toLocaleDateString() %>
+                                <% } %>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else if (typeof spots !== 'undefined' && spots.length === 0) { %>
+        <div class="text-center py-5">
+            <i class="fas fa-fish fa-4x text-muted mb-3"></i>
+            <h3>No fishing spots found</h3>
+            <p class="text-muted">Try adjusting your search or check back later for new spots.</p>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

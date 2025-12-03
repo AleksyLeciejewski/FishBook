@@ -1,5 +1,4 @@
-// File: `models/FishingSpot.js`
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const CoordinatesSchema = new mongoose.Schema({
     lat: { type: Number },
@@ -15,4 +14,6 @@ const FishingSpotSchema = new mongoose.Schema({
 
 FishingSpotSchema.index({ type: 1 });
 
-module.exports = mongoose.models.FishingSpot || mongoose.model('FishingSpot', FishingSpotSchema);
+const FishingSpot = mongoose.models.FishingSpot || mongoose.model('FishingSpot', FishingSpotSchema);
+
+export default FishingSpot;

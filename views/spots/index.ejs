@@ -1,0 +1,78 @@
+<%- include('../partials/header', { title: 'Find Fishing Spots - FishBook' }) %>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Find Fishing Spots</h1>
+    
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="/fishing-spots" method="GET" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control" 
+                               name="q" 
+                               placeholder="Search by name or description..." 
+                               value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="gratis" <%= typeof selectedType !== 'undefined' && selectedType === 'gratis' ? 'selected' : '' %>>Free</option>
+                        <option value="betalings" <%= typeof selectedType !== 'undefined' && selectedType === 'betalings' ? 'selected' : '' %>>Paid</option>
+                        <option value="privat" <%= typeof selectedType !== 'undefined' && selectedType === 'privat' ? 'selected' : '' %>>Private</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <a href="/fishing-spots" class="btn btn-outline-secondary w-100">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <% if (typeof spots !== 'undefined' && spots.length > 0) { %>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <% spots.forEach(spot => { %>
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= spot.name %></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <% if (spot.type === 'gratis') { %>
+                                    <span class="badge bg-success">Free</span>
+                                <% } else if (spot.type === 'betalings') { %>
+                                    <span class="badge bg-warning text-dark">Paid</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">Private</span>
+                                <% } %>
+                            </h6>
+                            <% if (spot.description) { %>
+                                <p class="card-text"><%= spot.description %></p>
+                            <% } %>
+                            <% if (spot.location && spot.location.lat && spot.location.lng) { %>
+                                <div class="mt-2">
+                                    <a href="https://www.google.com/maps?q=<%= spot.location.lat %>,<%= spot.location.lng %>" 
+                                       target="_blank" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-map-marker-alt"></i> View on Map
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else if (typeof spots !== 'undefined' && spots.length === 0) { %>
+        <div class="alert alert-info">
+            No fishing spots found. Try adjusting your search criteria.
+        </div>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %>

@@ -15,6 +15,8 @@ import catchRouter from './routes/catches.js';
 import tripRouter from './routes/trips.js';
 import userRouter from './routes/users.js';
 import weatherRouter from './routes/weather.js';
+import fishingSpotsRouter from './routes/fishingSpots.js';
+import exploreRouter from './routes/explore.js';
 
 // Load environment variables
 dotenv.config();
@@ -76,12 +78,42 @@ app.use((req, res, next) => {
 // API Routes
 app.use('/api/weather', weatherRouter);
 
+// Test route
+app.get('/test-route', (req, res) => {
+  res.send('Test route is working!');
+});
+
 // Application Routes
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/catches', catchRouter);
 app.use('/trips', tripRouter);
 app.use('/users', userRouter);
+app.use('/fishing-spots', fishingSpotsRouter);
+app.use('/explore', exploreRouter);  // Explicitly mount at /explore
+
+// Debug route to list all registered routes
+app.get('/debug-routes', (req, res) => {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      routes.push({
+        path: middleware.route.path,
+        methods: Object.keys(middleware.route.methods)
+      });
+    } else if (middleware.name === 'router') {
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          routes.push({
+            path: handler.route.path,
+            methods: Object.keys(handler.route.methods)
+          });
+        }
+      });
+    }
+  });
+  res.json(routes);
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -133,10 +165,46 @@ app.use((req, res) => {
     });
 });
 
+// Debug: Log all routes
+const printRoutes = () => {
+  console.log('\n=== Registered Routes ===');
+  const routes = [];
+  
+  const processMiddleware = (middleware, prefix = '') => {
+    if (middleware.route) {
+      // Routes registered directly on the app
+      const route = middleware.route;
+      const methods = Object.keys(route.methods).map(method => method.toUpperCase());
+      routes.push({ path: prefix + route.path, methods });
+    } else if (middleware.name === 'router' || middleware.name === 'router') {
+      // Router middleware
+      middleware.handle.stack.forEach(handler => processMiddleware(handler, prefix));
+    } else if (middleware.handle && middleware.handle.stack) {
+      // Nested router
+      middleware.handle.stack.forEach(handler => processMiddleware(handler, prefix));
+    }
+  };
+
+  app._router.stack.forEach(middleware => {
+    if (middleware.name === 'router') {
+      // This is a router mounted on a path
+      middleware.handle.stack.forEach(handler => {
+        processMiddleware(handler, middleware.regexp.source.replace('/^\\', '').replace('\\/?(?=\\/|$)/i', ''));
+      });
+    } else {
+      processMiddleware(middleware);
+    }
+  });
+
+  console.table(routes);
+  console.log('========================\n');
+};
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+    if (process.env.NODE_ENV !== 'production') {
+        printRoutes();
+    }
 });
-
-export default app;
