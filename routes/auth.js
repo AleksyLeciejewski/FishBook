@@ -1,3 +1,4 @@
+// File: `routes/auth.js`
 import express from 'express';
 import { check } from 'express-validator';
 import { register, login, getCurrentUser, updateProfile } from '../controllers/authController.js';
@@ -5,49 +6,48 @@ import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// @route   POST api/auth/register
-// @desc    Register user
-// @access  Public
+// Render register page with safe defaults so `errors` and form fields are defined in EJS
+router.get('/register', (req, res) => {
+    return res.render('auth/register', {
+        errors: [],
+        firstName: '',
+        lastName: '',
+        username: '',
+        email: ''
+    });
+});
+
+// Render login page with safe defaults
+router.get('/login', (req, res) => {
+    return res.render('auth/login', {
+        errors: [],
+        email: ''
+    });
+});
+
+// POST /auth/register
 router.post(
-  '/register',
-  [
-    check('username', 'Username is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
-  ],
-  register
-);
-
-// @route   POST api/auth/login
-// @desc    Authenticate user & get token
-// @access  Public
-router.post(
-  '/login',
-  [
-    check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
-  ],
-  login
-);
-
-// @route   GET api/auth/me
-// @desc    Get user by token
-// @access  Private
-router.get('/me', auth, getCurrentUser);
-
-// @route   PUT api/auth/profile
-// @desc    Update user profile
-// @access  Private
-router.put(
-  '/profile',
-  [
-    auth,
+    '/register',
     [
-      check('bio', 'Bio cannot be longer than 500 characters').isLength({ max: 500 }),
-      check('location', 'Location cannot be longer than 100 characters').isLength({ max: 100 })
-    ]
-  ],
-  updateProfile
+        check('username', 'Username is required and must be 3-30 chars').notEmpty().isLength({ min: 3, max: 30 }),
+        check('email', 'Please include a valid email').isEmail(),
+        check('password', 'Password must be at least 6 characters').isLength({ min: 6 })
+    ],
+    register
 );
+
+// POST /auth/login
+router.post(
+    '/login',
+    [
+        check('email', 'Please include a valid email').isEmail(),
+        check('password', 'Password is required').notEmpty()
+    ],
+    login
+);
+
+// Protected user endpoints
+router.get('/me', auth, getCurrentUser);
+router.put('/me', auth, updateProfile);
 
 export default router;
