@@ -3,6 +3,7 @@ import express from 'express';
 import { check } from 'express-validator';
 import { register, login, getCurrentUser, updateProfile } from '../controllers/authController.js';
 import auth from '../middleware/auth.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -45,6 +46,23 @@ router.post(
     ],
     login
 );
+
+// Temporary route to refresh session
+router.get('/refresh-session', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Not logged in');
+    }
+
+    const user = await User.findById(req.session.user.id).select('-password');
+    req.session.user = {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+        email: user.email
+    };
+    res.send('Session refreshed.');
+});
+
 
 // Protected user endpoints
 router.get('/me', auth, getCurrentUser);
