@@ -1,3 +1,5 @@
+// javascript
+import Draft from '../models/Draft.js';
 import Catch from '../models/Catch.js';
 import { validationResult } from 'express-validator';
 import { getLocationWeather } from '../services/weatherService.js';
@@ -8,7 +10,7 @@ export const renderCatchesIndex = async (req, res) => {
     try {
         const { species, minWeight, maxWeight, location, userId, page = 1, limit = 12 } = req.query;
         const query = { isPublic: true };
-        
+
         if (species) query.species = new RegExp(species, 'i');
         if (minWeight || maxWeight) {
             query.weight = {};
@@ -16,9 +18,7 @@ export const renderCatchesIndex = async (req, res) => {
             if (maxWeight) query.weight.$lte = Number(maxWeight);
         }
         if (userId) query.user = userId;
-        if (location) {
-            query['location.name'] = new RegExp(location, 'i');
-        }
+        if (location) query['location.name'] = new RegExp(location, 'i');
 
         const catches = await Catch.find(query)
             .populate('user', 'username profilePicture')
@@ -29,11 +29,29 @@ export const renderCatchesIndex = async (req, res) => {
 
         const count = await Catch.countDocuments(query);
 
+        // --- Drafts: robust session user extraction + debug logs ---
+        let drafts = [];
+        const sessionUser = req.session && req.session.user;
+        // Accept multiple shapes: {_id}, {id}, or direct string
+        const sessionUserId = sessionUser && (sessionUser._id || sessionUser.id || sessionUser);
+
+        console.log('renderCatchesIndex: sessionUser=', JSON.stringify(sessionUser || null));
+        console.log('renderCatchesIndex: resolved sessionUserId=', sessionUserId);
+
+        if (sessionUserId) {
+            drafts = await Draft.find({ user: sessionUserId, type: 'catch' })
+                .sort({ updatedAt: -1 })
+                .lean();
+        }
+
+        console.log('renderCatchesIndex: drafts count =', Array.isArray(drafts) ? drafts.length : 0);
+
         res.render('catches/index', {
             title: 'All Catches',
             catches,
+            drafts,
             totalPages: Math.ceil(count / limit),
-            currentPage: parseInt(page),
+            currentPage: parseInt(page, 10),
             species: species || '',
             minWeight: minWeight || '',
             maxWeight: maxWeight || '',
@@ -56,9 +74,28 @@ export const renderCatchesIndex = async (req, res) => {
 
 export const renderNewCatchForm = async (req, res) => {
     try {
+        let catchItem = null;
+        let draftId = '';
+        const draftIdQuery = req.query.draftId;
+
+        if (draftIdQuery) {
+            try {
+                const found = await Draft.findById(draftIdQuery).lean();
+                // ensure draft exists, belongs to current user and is a 'catch'
+                if (found && req.user && found.user.toString() === req.user.id && found.type === 'catch') {
+                    catchItem = found.data || {};
+                    draftId = found._id ? found._id.toString() : '';
+                }
+            } catch (e) {
+                console.error('Error loading draft for new catch:', e.message);
+            }
+        }
+
         res.render('catches/new', {
             title: 'Log a Catch',
-            errors: null
+            errors: null,
+            catchItem,
+            draftId
         });
     } catch (err) {
         console.error(err.message);
@@ -74,7 +111,7 @@ export const getCatches = async (req, res) => {
     try {
         const { species, minWeight, maxWeight, location, userId, page = 1, limit = 10 } = req.query;
         const query = { isPublic: true };
-        
+
         if (species) query.species = new RegExp(species, 'i');
         if (minWeight || maxWeight) {
             query.weight = {};
@@ -82,10 +119,8 @@ export const getCatches = async (req, res) => {
             if (maxWeight) query.weight.$lte = Number(maxWeight);
         }
         if (userId) query.user = userId;
-        
-        // Handle location-based search (simplified - would need geospatial query in production)
+
         if (location) {
-            // This is a simplified version - in production, you'd use MongoDB's geospatial queries
             query['location.name'] = new RegExp(location, 'i');
         }
 
@@ -113,7 +148,7 @@ export const renderCatchDetail = async (req, res) => {
         const catchItem = await Catch.findById(req.params.id)
             .populate('user', 'username profilePicture')
             .populate('comments.user', 'username profilePicture');
-            
+
         if (!catchItem) {
             return res.status(404).render('error', {
                 title: 'Error',
@@ -141,7 +176,7 @@ export const getCatchById = async (req, res) => {
         const catchItem = await Catch.findById(req.params.id)
             .populate('user', 'username profilePicture')
             .populate('comments.user', 'username profilePicture');
-            
+
         if (!catchItem) {
             return res.status(404).json({ msg: 'Catch not found' });
         }
@@ -158,14 +193,14 @@ export const getCatchById = async (req, res) => {
 
 export const createCatch = async (req, res) => {
     try {
-        const { 
-            species, 
-            weight, 
-            length, 
+        const {
+            species,
+            weight,
+            length,
             locationName,
             latitude,
             longitude,
-            description, 
+            description,
             isPublic,
             dateCaught,
             timeCaught,
@@ -177,7 +212,6 @@ export const createCatch = async (req, res) => {
             weatherWindDirection
         } = req.body;
 
-        // Validate required fields
         if (!species || !weight || !locationName || !latitude || !longitude || !dateCaught) {
             return res.status(400).render('catches/new', {
                 title: 'Log a Catch',
@@ -185,18 +219,15 @@ export const createCatch = async (req, res) => {
             });
         }
 
-        // Validate image upload
         if (!req.file) {
             return res.status(400).render('catches/new', {
                 title: 'Log a Catch',
                 errors: [{ msg: 'Please upload an image of your catch' }]
             });
         }
-        
-        // Process the image upload - convert to relative path for storage
+
         const imagePath = req.file.path.replace(/\\/g, '/').replace('public/', '');
 
-        // Prepare catch data
         const catchData = {
             user: req.user._id || req.user.id,
             species,
@@ -212,12 +243,10 @@ export const createCatch = async (req, res) => {
             dateCaught: new Date(dateCaught)
         };
 
-        // Add optional fields
         if (length) catchData.length = parseFloat(length);
         if (bait) catchData.bait = bait;
         if (tackle) catchData.tackle = tackle;
 
-        // Add weather data if provided
         if (weatherTemp || weatherCondition || weatherWindSpeed || weatherWindDirection) {
             catchData.weather = {};
             if (weatherTemp) catchData.weather.temperature = parseFloat(weatherTemp);
@@ -228,13 +257,11 @@ export const createCatch = async (req, res) => {
 
         const newCatch = new Catch(catchData);
         await newCatch.save();
-        
-        // Redirect to the catches page or the new catch detail page
+
         res.redirect('/catches');
     } catch (err) {
         console.error('Error creating catch:', err);
-        
-        // Delete uploaded file if there was an error
+
         if (req.file && req.file.path) {
             try {
                 fs.unlinkSync(req.file.path);
@@ -242,7 +269,7 @@ export const createCatch = async (req, res) => {
                 console.error('Error deleting file:', unlinkErr);
             }
         }
-        
+
         res.status(500).render('catches/new', {
             title: 'Log a Catch',
             errors: [{ msg: 'Error saving catch: ' + err.message }]
@@ -253,19 +280,17 @@ export const createCatch = async (req, res) => {
 export const updateCatch = async (req, res) => {
     try {
         const { species, weight, length, location, description, isPublic } = req.body;
-        
+
         let catchItem = await Catch.findById(req.params.id);
-        
+
         if (!catchItem) {
             return res.status(404).json({ msg: 'Catch not found' });
         }
-        
-        // Check user ownership
+
         if (catchItem.user.toString() !== req.user.id) {
             return res.status(401).json({ msg: 'User not authorized' });
         }
 
-        // Update fields
         if (species) catchItem.species = species;
         if (weight) catchItem.weight = weight;
         if (length) catchItem.length = length;
@@ -278,10 +303,8 @@ export const updateCatch = async (req, res) => {
                 name: location.name
             };
         }
-        
-        // Handle image update if a new image is uploaded
+
         if (req.file) {
-            // In a real app, you'd delete the old image from storage
             catchItem.image = req.file.path;
         }
 
@@ -296,18 +319,15 @@ export const updateCatch = async (req, res) => {
 export const deleteCatch = async (req, res) => {
     try {
         const catchItem = await Catch.findById(req.params.id);
-        
+
         if (!catchItem) {
             return res.status(404).json({ msg: 'Catch not found' });
         }
-        
-        // Check user ownership or admin
+
         if (catchItem.user.toString() !== req.user.id && !req.user.isAdmin) {
             return res.status(401).json({ msg: 'User not authorized' });
         }
 
-        // In a real app, you'd delete the associated image from storage
-        
         await catchItem.remove();
         res.json({ msg: 'Catch removed' });
     } catch (err) {
@@ -322,25 +342,24 @@ export const deleteCatch = async (req, res) => {
 export const addComment = async (req, res) => {
     try {
         const { text } = req.body;
-        
+
         const catchItem = await Catch.findById(req.params.id);
-        
+
         if (!catchItem) {
             return res.status(404).json({ msg: 'Catch not found' });
         }
-        
+
         const userId = req.user._id || req.user.id;
         const newComment = {
             user: userId,
             text
         };
-        
+
         catchItem.comments.unshift(newComment);
         await catchItem.save();
-        
-        // Populate the user info in the response
+
         await catchItem.populate('comments.user', 'username profilePicture');
-        
+
         res.json(catchItem.comments);
     } catch (err) {
         console.error(err.message);
@@ -351,30 +370,26 @@ export const addComment = async (req, res) => {
 export const toggleLike = async (req, res) => {
     try {
         const catchItem = await Catch.findById(req.params.id);
-        
+
         if (!catchItem) {
             return res.status(404).json({ msg: 'Catch not found' });
         }
         
         const userId = req.user._id || req.user.id;
-        
+
         // Check if the catch has already been liked by this user
         const isLiked = catchItem.likes.some(
             like => like.toString() === userId.toString()
         );
         
         if (isLiked) {
-            // Remove like
-            catchItem.likes = catchItem.likes.filter(
-                like => like.toString() !== userId.toString()
-            );
+            catchItem.likes = catchItem.likes.filter(like => like.toString() !== userId.toString());
         } else {
-            // Add like
             catchItem.likes.unshift(userId);
         }
-        
+
         await catchItem.save();
-        
+
         res.json({ likes: catchItem.likes });
     } catch (err) {
         console.error(err.message);

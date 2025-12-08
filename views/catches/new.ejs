@@ -359,11 +359,19 @@
             
             <!-- Form Actions -->
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <input type="hidden" id="draftId" name="draftId" value="">
+                <div id="draftStatus" class="text-sm self-center mr-4"></div>
+
                 <a href="/catches" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                     Cancel
                 </a>
+
                 <button type="submit" class="px-6 py-2 border border-transparent rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Save Catch
+                </button>
+
+                <button type="button" id="saveDraftBtn" class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500">
+                    Save Draft
                 </button>
             </div>
         </form>
@@ -536,6 +544,81 @@
             e.preventDefault();
             alert('Please fill in all required fields.');
         }
+    });
+    function collectFormDataForDraft() {
+        return {
+            species: document.getElementById('species') ? document.getElementById('species').value : '',
+            weight: document.getElementById('weight') ? document.getElementById('weight').value : '',
+            length: document.getElementById('length') ? document.getElementById('length').value : '',
+            locationName: document.getElementById('locationName') ? document.getElementById('locationName').value : '',
+            latitude: document.getElementById('latitude') ? document.getElementById('latitude').value : '',
+            longitude: document.getElementById('longitude') ? document.getElementById('longitude').value : '',
+            description: document.getElementById('description') ? document.getElementById('description').value : '',
+            dateCaught: document.getElementById('dateCaught') ? document.getElementById('dateCaught').value : '',
+            timeCaught: document.getElementById('timeCaught') ? document.getElementById('timeCaught').value : '',
+            bait: document.getElementById('bait') ? document.getElementById('bait').value : '',
+            tackle: document.getElementById('tackle') ? document.getElementById('tackle').value : '',
+            isPublic: document.getElementById('isPublic') ? document.getElementById('isPublic').checked : false,
+            weatherTemp: document.getElementById('weatherTemp') ? document.getElementById('weatherTemp').value : '',
+            weatherCondition: document.getElementById('weatherCondition') ? document.getElementById('weatherCondition').value : '',
+            weatherWindSpeed: document.getElementById('weatherWindSpeed') ? document.getElementById('weatherWindSpeed').value : '',
+            weatherWindDirection: document.getElementById('weatherWindDirection') ? document.getElementById('weatherWindDirection').value : ''
+        };
+    }
+
+    function showDraftStatus(message, ok = true) {
+        const el = document.getElementById('draftStatus');
+        if (!el) return;
+        el.textContent = message;
+        el.style.color = ok ? '#03543f' : '#b91c1c';
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => { el.textContent = ''; }, 4000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('saveDraftBtn');
+        const draftIdInput = document.getElementById('draftId');
+        if (!btn) return;
+
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+
+            try {
+                const data = collectFormDataForDraft();
+
+                const payload = { type: 'catch', data };
+                const currentId = draftIdInput && draftIdInput.value ? draftIdInput.value : '';
+                if (currentId) payload.id = currentId;
+
+                const res = await fetch('/drafts', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const txt = await res.text().catch(() => null);
+                    throw new Error(txt || 'Failed to save draft');
+                }
+
+                const json = await res.json();
+                // server returns created/updated draft; store id for later updates
+                if (json && json._id) {
+                    draftIdInput.value = json._id;
+                }
+
+                showDraftStatus('Draft saved', true);
+            } catch (err) {
+                console.error('Draft save error:', err);
+                showDraftStatus('Error saving draft', false);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
     });
 </script>
 
