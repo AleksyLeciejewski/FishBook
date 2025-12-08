@@ -1,6 +1,74 @@
 import Catch from '../models/Catch.js';
 import { validationResult } from 'express-validator';
 import { getLocationWeather } from '../services/weatherService.js';
+import path from 'path';
+import fs from 'fs';
+
+export const renderCatchesIndex = async (req, res) => {
+    try {
+        const { species, minWeight, maxWeight, location, userId, page = 1, limit = 12 } = req.query;
+        const query = { isPublic: true };
+        
+        if (species) query.species = new RegExp(species, 'i');
+        if (minWeight || maxWeight) {
+            query.weight = {};
+            if (minWeight) query.weight.$gte = Number(minWeight);
+            if (maxWeight) query.weight.$lte = Number(maxWeight);
+        }
+        if (userId) query.user = userId;
+        if (location) {
+            query['location.name'] = new RegExp(location, 'i');
+        }
+
+        const catches = await Catch.find(query)
+            .populate('user', 'username profilePicture')
+            .sort({ dateCaught: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit)
+            .lean();
+
+        const count = await Catch.countDocuments(query);
+
+        res.render('catches/index', {
+            title: 'All Catches',
+            catches,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            species: species || '',
+            minWeight: minWeight || '',
+            maxWeight: maxWeight || '',
+            location: location || '',
+            userId: userId || '',
+            search: req.query.search || '',
+            queryString: '',
+            topAnglers: [],
+            recentActivity: []
+        });
+    } catch (err) {
+        console.error('Error in renderCatchesIndex:', err);
+        res.status(500).render('error', {
+            title: 'Error',
+            error: 'Error loading catches',
+            message: err.message
+        });
+    }
+};
+
+export const renderNewCatchForm = async (req, res) => {
+    try {
+        res.render('catches/new', {
+            title: 'Log a Catch',
+            errors: null
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).render('error', {
+            title: 'Error',
+            error: 'Error loading form',
+            message: err.message
+        });
+    }
+};
 
 export const getCatches = async (req, res) => {
     try {
@@ -62,71 +130,95 @@ export const getCatchById = async (req, res) => {
 
 export const createCatch = async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
         const { 
             species, 
             weight, 
             length, 
-            location, 
+            locationName,
+            latitude,
+            longitude,
             description, 
-            isPublic = true,
-            dateCaught = new Date().toISOString().split('T')[0],
-            timeCaught = '12:00'
+            isPublic,
+            dateCaught,
+            timeCaught,
+            bait,
+            tackle,
+            weatherTemp,
+            weatherCondition,
+            weatherWindSpeed,
+            weatherWindDirection
         } = req.body;
+
+        // Validate required fields
+        if (!species || !weight || !locationName || !latitude || !longitude || !dateCaught) {
+            return res.status(400).render('catches/new', {
+                title: 'Log a Catch',
+                errors: [{ msg: 'Please fill in all required fields (species, weight, location, date)' }]
+            });
+        }
+
+        // Validate image upload
+        if (!req.file) {
+            return res.status(400).render('catches/new', {
+                title: 'Log a Catch',
+                errors: [{ msg: 'Please upload an image of your catch' }]
+            });
+        }
         
-        // In a real app, you'd process the image upload here
-        const image = req.file ? req.file.path : '';
+        // Process the image upload - convert to relative path for storage
+        const imagePath = req.file.path.replace(/\\/g, '/').replace('public/', '');
 
         // Prepare catch data
         const catchData = {
-            user: req.user.id,
+            user: req.user._id || req.user.id,
             species,
-            weight,
-            length,
+            weight: parseFloat(weight),
             location: {
                 type: 'Point',
-                coordinates: [location.lng, location.lat],
-                name: location.name
+                coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                name: locationName
             },
-            image,
-            description,
-            isPublic,
-            dateCaught
+            image: imagePath,
+            description: description || '',
+            isPublic: isPublic === 'on' || isPublic === true,
+            dateCaught: new Date(dateCaught)
         };
 
-        try {
-            // Get weather data for the catch location and time
-            const weather = await getLocationWeather(
-                { lat: location.lat, lng: location.lng },
-                dateCaught,
-                timeCaught
-            );
-            
-            // Add weather data to catch
-            catchData.weather = {
-                temperature: weather.temperature,
-                condition: weather.condition,
-                windSpeed: weather.windSpeed,
-                windDirection: weather.windDirection,
-                humidity: weather.humidity,
-                timestamp: weather.timestamp
-            };
-        } catch (weatherError) {
-            console.error('Error fetching weather data:', weatherError);
-            // Continue without weather data if there's an error
+        // Add optional fields
+        if (length) catchData.length = parseFloat(length);
+        if (bait) catchData.bait = bait;
+        if (tackle) catchData.tackle = tackle;
+
+        // Add weather data if provided
+        if (weatherTemp || weatherCondition || weatherWindSpeed || weatherWindDirection) {
+            catchData.weather = {};
+            if (weatherTemp) catchData.weather.temperature = parseFloat(weatherTemp);
+            if (weatherCondition) catchData.weather.condition = weatherCondition;
+            if (weatherWindSpeed) catchData.weather.windSpeed = parseFloat(weatherWindSpeed);
+            if (weatherWindDirection) catchData.weather.windDirection = weatherWindDirection;
         }
 
         const newCatch = new Catch(catchData);
-
         await newCatch.save();
-        res.json(newCatch);
+        
+        // Redirect to the catches page or the new catch detail page
+        res.redirect('/catches');
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('Error creating catch:', err);
+        
+        // Delete uploaded file if there was an error
+        if (req.file && req.file.path) {
+            try {
+                fs.unlinkSync(req.file.path);
+            } catch (unlinkErr) {
+                console.error('Error deleting file:', unlinkErr);
+            }
+        }
+        
+        res.status(500).render('catches/new', {
+            title: 'Log a Catch',
+            errors: [{ msg: 'Error saving catch: ' + err.message }]
+        });
     }
 };
 

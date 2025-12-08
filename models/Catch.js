@@ -48,6 +48,22 @@ const catchSchema = new mongoose.Schema({
         type: String,
         maxlength: 1000
     },
+    bait: {
+        type: String,
+        trim: true
+    },
+    tackle: {
+        type: String,
+        trim: true
+    },
+    weather: {
+        temperature: Number,
+        condition: String,
+        windSpeed: Number,
+        windDirection: String,
+        humidity: Number,
+        timestamp: Date
+    },
     isPublic: {
         type: Boolean,
         default: true

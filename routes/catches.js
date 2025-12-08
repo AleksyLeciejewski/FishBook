@@ -10,9 +10,12 @@ import {
   updateCatch, 
   deleteCatch,
   addComment,
-  toggleLike
+  toggleLike,
+  renderNewCatchForm,
+  renderCatchesIndex
 } from '../controllers/catchController.js';
 import auth from '../middleware/auth.js';
+import sessionAuth from '../middleware/sessionAuth.js';
 
 const router = express.Router();
 
@@ -47,33 +50,44 @@ const upload = multer({
   }
 });
 
-// @route   GET /api/catches
-// @desc    Get all catches
+// @route   GET /catches
+// @desc    Render catches index page
 // @access  Public
-router.get('/', getCatches);
+router.get('/', renderCatchesIndex);
 
-// @route   GET /api/catches/:id
+// @route   GET /catches/new
+// @desc    Render new catch form
+// @access  Private
+router.get('/new', sessionAuth, renderNewCatchForm);
+
+// @route   GET /api/catches
+// @desc    Get all catches (API)
+// @access  Public
+router.get('/api', getCatches);
+
+// @route   GET /catches/:id
 // @desc    Get catch by ID
 // @access  Public
 router.get('/:id', getCatchById);
 
-// @route   POST /api/catches
+// @route   POST /catches
 // @desc    Create a catch
 // @access  Private
 router.post(
   '/',
-  [
-    auth,
-    upload.single('image'),
-    [
-      check('species', 'Species is required').not().isEmpty(),
-      check('weight', 'Weight is required and must be a number').isNumeric(),
-      check('location', 'Location is required').isObject(),
-      check('location.lat', 'Latitude is required and must be a number').isNumeric(),
-      check('location.lng', 'Longitude is required and must be a number').isNumeric(),
-      check('location.name', 'Location name is required').not().isEmpty()
-    ]
-  ],
+  sessionAuth,
+  (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+      if (err) {
+        console.error('Multer error:', err);
+        return res.status(400).render('catches/new', {
+          title: 'Log a Catch',
+          errors: [{ msg: err.message || 'Error uploading file. Please try again.' }]
+        });
+      }
+      next();
+    });
+  },
   createCatch
 );
 

@@ -1,4 +1,56 @@
-<div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - FishBook</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold">FishBook</a>
+            <div class="flex items-center space-x-4">
+                <% if (locals.currentUser) { %>
+                    <a href="/catches" class="hover:bg-blue-700 px-3 py-2 rounded">My Catches</a>
+                    <a href="/trips" class="hover:bg-blue-700 px-3 py-2 rounded">Trips</a>
+                    <a href="/fishing-spots" class="hover:bg-blue-700 px-3 py-2 rounded">Find Spots</a>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <img src="<%= currentUser.profilePicture || '/images/default-avatar.png' %>" 
+                                 alt="Profile" 
+                                 class="w-8 h-8 rounded-full border-2 border-white">
+                            <span><%= currentUser.username %></span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                            <a href="/users/<%= currentUser._id %>" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <i class="fas fa-user mr-2"></i>Profile
+                            </a>
+                            <a href="/settings" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <form action="/auth/logout" method="POST" class="border-t border-gray-200 mt-1">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/auth/register" class="hover:bg-blue-700 px-3 py-2 rounded">Register</a>
+                    <a href="/auth/login" class="bg-white text-blue-600 hover:bg-gray-200 px-4 py-2 rounded font-medium">Login</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
     <div class="px-6 py-8">
         <div class="text-center mb-8">
             <h1 class="text-2xl font-bold text-gray-800">Log Your Catch</h1>
@@ -91,7 +143,7 @@
                         <div class="flex text-sm text-gray-600">
                             <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                                 <span>Upload a file</span>
-                                <input id="image" name="image" type="file" class="sr-only" accept="image/*" required>
+                                <input id="image" name="image" type="file" class="sr-only" accept="image/*">
                             </label>
                             <p class="pl-1">or drag and drop</p>
                         </div>
@@ -318,10 +370,6 @@
     </div>
 </div>
 
-<!-- Include Leaflet CSS and JS for the map -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
 <!-- Custom JavaScript for the form -->
 <script>
     // Image preview functionality
@@ -476,9 +524,22 @@
             }
         });
         
+        // Validate image file
+        const imageInput = document.getElementById('image');
+        if (!imageInput.files || imageInput.files.length === 0) {
+            alert('Please upload an image of your catch.');
+            e.preventDefault();
+            return;
+        }
+        
         if (!isValid) {
             e.preventDefault();
             alert('Please fill in all required fields.');
         }
     });
 </script>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    </main>
+</body>
+</html>

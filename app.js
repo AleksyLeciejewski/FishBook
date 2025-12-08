@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import methodOverride from 'method-override';
 import dotenv from 'dotenv';
-import fileUpload from 'express-fileupload';
+import fs from 'fs';
 
 // Import routes
 import indexRouter from './routes/index.js';
@@ -43,20 +43,25 @@ const __dirname = path.dirname(__filename);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Ensure upload directories exist
+const uploadDirs = [
+    path.join(__dirname, 'public', 'uploads'),
+    path.join(__dirname, 'public', 'uploads', 'catches'),
+    path.join(__dirname, 'public', 'uploads', 'profile-pictures')
+];
+
+uploadDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`Created directory: ${dir}`);
+    }
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
-
-// File upload middleware
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/',
-  createParentPath: true,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  abortOnLimit: true
-}));
 
 // Session configuration
 app.use(session({
