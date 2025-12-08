@@ -6,334 +6,372 @@
     <title><%= title %> - FishBook</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .catch-card {
+            transition: all 0.3s ease;
+        }
+        .catch-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .filter-badge {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-blue-600 text-white shadow-lg">
+    <nav class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold">FishBook</a>
+            <a href="/" class="text-2xl font-bold flex items-center">
+                <i class="fas fa-fish mr-2"></i>FishBook
+            </a>
             <div class="flex items-center space-x-4">
                 <% if (locals.currentUser) { %>
-                    <a href="/catches" class="hover:bg-blue-700 px-3 py-2 rounded">My Catches</a>
-                    <a href="/trips" class="hover:bg-blue-700 px-3 py-2 rounded">Trips</a>
-                    <a href="/fishing-spots" class="hover:bg-blue-700 px-3 py-2 rounded">Find Spots</a>
+                    <a href="/catches" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">My Catches</a>
+                    <a href="/trips" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">Trips</a>
+                    <a href="/fishing-spots" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">Find Spots</a>
                     <div class="relative group">
-                        <button class="flex items-center space-x-2 focus:outline-none">
+                        <button class="flex items-center space-x-2 focus:outline-none hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">
                             <img src="<%= currentUser.profilePicture || '/images/default-avatar.png' %>" 
                                  alt="Profile" 
                                  class="w-8 h-8 rounded-full border-2 border-white">
                             <span><%= currentUser.username %></span>
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
-                        <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                            <a href="/users/<%= currentUser._id %>" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                                <i class="fas fa-user mr-2"></i>Profile
+                        <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-10">
+                            <a href="/users/<%= currentUser._id %>" class="block px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
+                                <i class="fas fa-user mr-2 text-blue-600"></i>Profile
                             </a>
-                            <a href="/settings" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                                <i class="fas fa-cog mr-2"></i>Settings
+                            <a href="/settings" class="block px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
+                                <i class="fas fa-cog mr-2 text-blue-600"></i>Settings
                             </a>
-                            <form action="/auth/logout" method="POST" class="border-t border-gray-200 mt-1">
-                                <button type="submit" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            <form action="/auth/logout" method="POST" class="border-t border-gray-200 mt-1 pt-1">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-red-50 transition">
+                                    <i class="fas fa-sign-out-alt mr-2 text-red-600"></i>Logout
                                 </button>
                             </form>
                         </div>
                     </div>
                 <% } else { %>
-                    <a href="/auth/register" class="hover:bg-blue-700 px-3 py-2 rounded">Register</a>
-                    <a href="/auth/login" class="bg-white text-blue-600 hover:bg-gray-200 px-4 py-2 rounded font-medium">Login</a>
+                    <a href="/auth/register" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">Register</a>
+                    <a href="/auth/login" class="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition shadow-md">Login</a>
                 <% } %>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6">
-        <div class="flex flex-col md:flex-row gap-6">
-    <!-- Main Content -->
-    <div class="md:w-2/3">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">Recent Catches</h1>
-                <a href="/catches/new" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-plus mr-2"></i> New Catch
-                </a>
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">Community Catches</h1>
+                    <p class="text-blue-100 text-lg">Discover amazing catches from anglers around the world</p>
+                </div>
+                <% if (locals.currentUser) { %>
+                    <a href="/catches/new" class="mt-4 md:mt-0 bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold flex items-center shadow-lg transition transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i> Log a Catch
+                    </a>
+                <% } %>
             </div>
-            
-            <!-- Search and Filter -->
-            <div class="mb-6">
-                <form action="/catches" method="GET" class="space-y-4">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex-1">
-                            <label for="search" class="sr-only">Search</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
-                                </div>
-                                <input type="text" 
-                                       name="search" 
-                                       id="search" 
-                                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
-                                       placeholder="Search catches..."
-                                       value="<%= typeof search !== 'undefined' ? search : '' %>">
-                            </div>
-                        </div>
-                        <div class="w-full md:w-48">
-                            <label for="species" class="sr-only">Species</label>
-                            <select id="species" 
-                                    name="species" 
-                                    class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg">
-                                <option value="">All Species</option>
-                                <option value="bass" <%= species === 'bass' ? 'selected' : '' %>>Bass</option>
-                                <option value="trout" <%= species === 'trout' ? 'selected' : '' %>>Trout</option>
-                                <option value="salmon" <%= species === 'salmon' ? 'selected' : '' %>>Salmon</option>
-                                <option value="pike" <%= species === 'pike' ? 'selected' : '' %>>Pike</option>
-                                <option value="carp" <%= species === 'carp' ? 'selected' : '' %>>Carp</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                            Apply Filters
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Search and Filter Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <form action="/catches" method="GET" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Search -->
+                    <div class="md:col-span-2">
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-search mr-1"></i> Search
+                        </label>
+                        <input type="text" 
+                               name="search" 
+                               id="search" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" 
+                               placeholder="Search by species, location..."
+                               value="<%= search %>">
+                    </div>
+                    
+                    <!-- Species Filter -->
+                    <div>
+                        <label for="species" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-fish mr-1"></i> Species
+                        </label>
+                        <select id="species" 
+                                name="species" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="">All Species</option>
+                            <option value="bass" <%= species === 'bass' ? 'selected' : '' %>>Bass</option>
+                            <option value="trout" <%= species === 'trout' ? 'selected' : '' %>>Trout</option>
+                            <option value="salmon" <%= species === 'salmon' ? 'selected' : '' %>>Salmon</option>
+                            <option value="pike" <%= species === 'pike' ? 'selected' : '' %>>Pike</option>
+                            <option value="carp" <%= species === 'carp' ? 'selected' : '' %>>Carp</option>
+                            <option value="catfish" <%= species === 'catfish' ? 'selected' : '' %>>Catfish</option>
+                            <option value="perch" <%= species === 'perch' ? 'selected' : '' %>>Perch</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition transform hover:scale-105 shadow-md">
+                            <i class="fas fa-filter mr-2"></i> Apply Filters
                         </button>
                     </div>
-                </form>
-            </div>
-            
-            <!-- Catches List -->
-            <% if (catches && catches.length > 0) { %>
-                <div class="space-y-6">
-                    <% catches.forEach(catchItem => { %>
-                        <div class="border rounded-lg overflow-hidden hover:shadow-md transition duration-300">
-                            <div class="md:flex">
-                                <div class="md:flex-shrink-0 md:w-48 h-48 bg-gray-200 overflow-hidden">
-                                    <img src="<%= catchItem.image || '/images/default-catch.jpg' %>" 
-                                         alt="<%= catchItem.species %>" 
-                                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
-                                </div>
-                                <div class="p-6 flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h2 class="text-xl font-semibold text-gray-900">
-                                                <a href="/catches/<%= catchItem._id %>" class="hover:underline">
-                                                    <%= catchItem.species %>
-                                                </a>
-                                            </h2>
-                                            <div class="mt-1 text-sm text-gray-600">
-                                                <span class="inline-flex items-center mr-4">
-                                                    <i class="fas fa-weight-hanging mr-1"></i>
-                                                    <%= catchItem.weight %> kg
-                                                </span>
-                                                <% if (catchItem.length) { %>
-                                                    <span class="inline-flex items-center mr-4">
-                                                        <i class="fas fa-ruler-vertical mr-1"></i>
-                                                        <%= catchItem.length %> cm
-                                                    </span>
-                                                <% } %>
-                                                <span class="inline-flex items-center">
-                                                    <i class="fas fa-map-marker-alt mr-1"></i>
-                                                    <%= catchItem.location.name %>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="flex space-x-2">
-                                            <% if (currentUser && (currentUser.isAdmin || String(currentUser._id) === String(catchItem.user._id))) { %>
-                                                <a href="/catches/<%= catchItem._id %>/edit" 
-                                                   class="text-blue-600 hover:text-blue-800"
-                                                   title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="/catches/<%= catchItem._id %>?_method=DELETE" method="POST" class="inline">
-                                                    <button type="submit" 
-                                                            class="text-red-600 hover:text-red-800"
-                                                            onclick="return confirm('Are you sure you want to delete this catch?')"
-                                                            title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            <% } %>
-                                        </div>
-                                    </div>
-                                    
-                                    <% if (catchItem.description) { %>
-                                        <p class="mt-3 text-gray-600">
-                                            <%= catchItem.description.length > 200 ? 
-                                                catchItem.description.substring(0, 200) + '...' : 
-                                                catchItem.description %>
-                                            <% if (catchItem.description.length > 200) { %>
-                                                <a href="/catches/<%= catchItem._id %>" class="text-blue-600 hover:underline">Read more</a>
-                                            <% } %>
-                                        </p>
-                                    <% } %>
-                                    
-                                    <div class="mt-4 flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
-                                                 alt="<%= catchItem.user.username %>" 
-                                                 class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
-                                            <div class="ml-3">
-                                                <p class="text-sm font-medium text-gray-900">
-                                                    <a href="/users/<%= catchItem.user._id %>" class="hover:underline">
-                                                        <%= catchItem.user.username %>
-                                                    </a>
-                                                </p>
-                                                <div class="flex space-x-1 text-sm text-gray-500">
-                                                    <time datetime="<%= new Date(catchItem.dateCaught).toISOString() %>">
-                                                        <%= new Date(catchItem.dateCaught).toLocaleDateString('en-US', { 
-                                                            year: 'numeric', 
-                                                            month: 'short', 
-                                                            day: 'numeric' 
-                                                        }) %>
-                                                    </time>
-                                                    <span aria-hidden="true">·</span>
-                                                    <span><%= catchItem.comments.length %> comments</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center space-x-4">
-                                            <button class="flex items-center text-gray-500 hover:text-blue-600">
-                                                <i class="far fa-thumbs-up mr-1"></i>
-                                                <span><%= catchItem.likes.length %></span>
-                                            </button>
-                                            <a href="/catches/<%= catchItem._id %>#comments" class="flex items-center text-gray-500 hover:text-blue-600">
-                                                <i class="far fa-comment mr-1"></i>
-                                                <span><%= catchItem.comments.length %></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>
                 </div>
                 
-                <!-- Pagination -->
-                <% if (totalPages > 1) { %>
-                    <div class="mt-8 flex justify-center">
-                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                            <% if (currentPage > 1) { %>
-                                <a href="?page=<%= currentPage - 1 %><%= queryString ? '&' + queryString : '' %>" 
-                                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Previous</span>
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            <% } %>
-                            
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <% if (i === currentPage) { %>
-                                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
-                                        <%= i %>
-                                    </span>
-                                <% } else { %>
-                                    <a href="?page=<%= i %><%= queryString ? '&' + queryString : '' %>" 
-                                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                        <%= i %>
-                                    </a>
-                                <% } %>
-                            <% } %>
-                            
-                            <% if (currentPage < totalPages) { %>
-                                <a href="?page=<%= currentPage + 1 %><%= queryString ? '&' + queryString : '' %>" 
-                                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Next</span>
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            <% } %>
-                        </nav>
+                <!-- Weight Range -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="minWeight" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-weight-hanging mr-1"></i> Min Weight (kg)
+                        </label>
+                        <input type="number" 
+                               name="minWeight" 
+                               id="minWeight" 
+                               step="0.1"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" 
+                               placeholder="0.0"
+                               value="<%= minWeight %>">
                     </div>
-                <% } %>
-                
-            <% } else { %>
-                <div class="text-center py-12">
-                    <i class="fas fa-fish text-5xl text-gray-300 mb-4"></i>
-                    <h3 class="text-lg font-medium text-gray-900">No catches yet</h3>
-                    <p class="mt-1 text-sm text-gray-500">Be the first to share your catch!</p>
-                    <div class="mt-6">
-                        <a href="/catches/new" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <i class="fas fa-plus -ml-1 mr-2"></i>
-                            New Catch
+                    <div>
+                        <label for="maxWeight" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-weight-hanging mr-1"></i> Max Weight (kg)
+                        </label>
+                        <input type="number" 
+                               name="maxWeight" 
+                               id="maxWeight" 
+                               step="0.1"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" 
+                               placeholder="100.0"
+                               value="<%= maxWeight %>">
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Active Filters Display -->
+            <% if (species || minWeight || maxWeight || search) { %>
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-sm font-medium text-gray-700">Active Filters:</span>
+                        <% if (species) { %>
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-fish mr-1"></i> <%= species %>
+                                <a href="?<%= new URLSearchParams({...req.query, species: ''}).toString() %>" class="ml-2 hover:text-blue-600">×</a>
+                            </span>
+                        <% } %>
+                        <% if (minWeight) { %>
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                Min: <%= minWeight %>kg
+                            </span>
+                        <% } %>
+                        <% if (maxWeight) { %>
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                Max: <%= maxWeight %>kg
+                            </span>
+                        <% } %>
+                        <% if (search) { %>
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                <i class="fas fa-search mr-1"></i> "<%= search %>"
+                            </span>
+                        <% } %>
+                        <a href="/catches" class="text-sm text-red-600 hover:text-red-800 font-medium ml-2">
+                            <i class="fas fa-times-circle mr-1"></i> Clear All
                         </a>
                     </div>
                 </div>
             <% } %>
         </div>
-    </div>
-    
-    <!-- Sidebar -->
-    <div class="md:w-1/3">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Top Anglers</h2>
-            <div class="space-y-4">
-                <% if (topAnglers && topAnglers.length > 0) { %>
-                    <% topAnglers.forEach((angler, index) => { %>
-                        <div class="flex items-center">
-                            <span class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mr-3">
-                                <%= index + 1 %>
-                            </span>
-                            <img src="<%= angler.profilePicture || '/images/default-avatar.png' %>" 
-                                 alt="<%= angler.username %>" 
-                                 class="w-10 h-10 rounded-full border-2 border-white shadow-sm">
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-900">
-                                    <a href="/users/<%= angler._id %>" class="hover:underline">
-                                        <%= angler.username %>
-                                    </a>
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    <%= angler.catchCount %> catches
-                                </p>
+
+        <!-- Catches Grid -->
+        <% if (catches && catches.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% catches.forEach(catchItem => { %>
+                    <div class="catch-card bg-white rounded-xl shadow-md overflow-hidden">
+                        <!-- Image -->
+                        <div class="relative h-56 bg-gradient-to-br from-blue-400 to-indigo-500 overflow-hidden">
+                            <% if (catchItem.image) { %>
+                                <img src="/<%= catchItem.image %>" 
+                                     alt="<%= catchItem.species %>" 
+                                     class="w-full h-full object-cover">
+                            <% } else { %>
+                                <div class="flex items-center justify-center h-full">
+                                    <i class="fas fa-fish text-white text-6xl opacity-50"></i>
+                                </div>
+                            <% } %>
+                            <!-- Species Badge -->
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-white bg-opacity-95 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                                    <i class="fas fa-fish mr-1 text-blue-600"></i> <%= catchItem.species %>
+                                </span>
                             </div>
+                            <!-- Edit/Delete Actions -->
+                            <% if (currentUser && (currentUser.isAdmin || String(currentUser._id) === String(catchItem.user._id))) { %>
+                                <div class="absolute top-4 right-4 flex space-x-2">
+                                    <a href="/catches/<%= catchItem._id %>/edit" 
+                                       class="bg-white bg-opacity-95 hover:bg-opacity-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition"
+                                       title="Edit">
+                                        <i class="fas fa-edit text-sm"></i>
+                                    </a>
+                                    <form action="/catches/<%= catchItem._id %>?_method=DELETE" method="POST" class="inline">
+                                        <button type="submit" 
+                                                class="bg-white bg-opacity-95 hover:bg-opacity-100 text-red-600 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition"
+                                                onclick="return confirm('Are you sure you want to delete this catch?')"
+                                                title="Delete">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            <% } %>
                         </div>
+                        
+                        <!-- Content -->
+                        <div class="p-5">
+                            <!-- Stats -->
+                            <div class="flex items-center space-x-4 text-sm font-medium mb-3">
+                                <span class="flex items-center text-blue-600">
+                                    <i class="fas fa-weight-hanging mr-1"></i>
+                                    <%= catchItem.weight %> kg
+                                </span>
+                                <% if (catchItem.length) { %>
+                                    <span class="flex items-center text-green-600">
+                                        <i class="fas fa-ruler-vertical mr-1"></i>
+                                        <%= catchItem.length %> cm
+                                    </span>
+                                <% } %>
+                            </div>
+                            
+                            <!-- Location -->
+                            <div class="flex items-center text-sm text-gray-600 mb-3">
+                                <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                <span class="truncate"><%= catchItem.location.name %></span>
+                            </div>
+                            
+                            <!-- Description -->
+                            <% if (catchItem.description) { %>
+                                <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+                                    <%= catchItem.description.length > 80 ? 
+                                        catchItem.description.substring(0, 80) + '...' : 
+                                        catchItem.description %>
+                                </p>
+                            <% } %>
+                            
+                            <!-- Footer -->
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <!-- User Info -->
+                                <div class="flex items-center space-x-2">
+                                    <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
+                                         alt="<%= catchItem.user.username %>" 
+                                         class="w-8 h-8 rounded-full border-2 border-gray-200">
+                                    <div class="text-xs">
+                                        <a href="/users/<%= catchItem.user._id %>" class="font-medium text-gray-900 hover:text-blue-600 block">
+                                            <%= catchItem.user.username %>
+                                        </a>
+                                        <time class="text-gray-500" datetime="<%= new Date(catchItem.dateCaught).toISOString() %>">
+                                            <%= new Date(catchItem.dateCaught).toLocaleDateString('en-US', { 
+                                                month: 'short', 
+                                                day: 'numeric' 
+                                            }) %>
+                                        </time>
+                                    </div>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="flex items-center space-x-3 text-sm">
+                                    <button class="flex items-center text-gray-500 hover:text-red-500 transition">
+                                        <i class="far fa-heart mr-1"></i>
+                                        <span><%= catchItem.likes.length %></span>
+                                    </button>
+                                    <a href="/catches/<%= catchItem._id %>" class="flex items-center text-gray-500 hover:text-blue-600 transition">
+                                        <i class="far fa-comment mr-1"></i>
+                                        <span><%= catchItem.comments ? catchItem.comments.length : 0 %></span>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- View Details Button -->
+                            <a href="/catches/<%= catchItem._id %>" class="mt-4 block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-2 rounded-lg font-medium transition transform hover:scale-105">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
                     <% }); %>
-                <% } else { %>
-                    <p class="text-sm text-gray-500">No anglers to display yet.</p>
+                </div>
+                
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+                <div class="mt-12 flex justify-center">
+                    <nav class="relative z-0 inline-flex rounded-lg shadow-md overflow-hidden" aria-label="Pagination">
+                        <% if (currentPage > 1) { %>
+                            <a href="?page=<%= currentPage - 1 %><%= queryString ? '&' + queryString : '' %>" 
+                               class="relative inline-flex items-center px-4 py-2 bg-white border-r border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 transition">
+                                <i class="fas fa-chevron-left mr-2"></i> Previous
+                            </a>
+                        <% } %>
+                        
+                        <% for (let i = 1; i <= Math.min(totalPages, 5); i++) { %>
+                            <% if (i === currentPage) { %>
+                                <span class="relative inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-sm font-medium text-white">
+                                    <%= i %>
+                                </span>
+                            <% } else { %>
+                                <a href="?page=<%= i %><%= queryString ? '&' + queryString : '' %>" 
+                                   class="relative inline-flex items-center px-4 py-2 bg-white border-r border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 transition">
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                        <% } %>
+                        
+                        <% if (currentPage < totalPages) { %>
+                            <a href="?page=<%= currentPage + 1 %><%= queryString ? '&' + queryString : '' %>" 
+                               class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 transition">
+                                Next <i class="fas fa-chevron-right ml-2"></i>
+                            </a>
+                        <% } %>
+                    </nav>
+                </div>
+            <% } %>
+            
+        <% } else { %>
+            <!-- Empty State -->
+            <div class="bg-white rounded-xl shadow-md p-12 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 mb-6">
+                    <i class="fas fa-fish text-4xl text-blue-600"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">No Catches Found</h3>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                    <% if (species || minWeight || maxWeight || search) { %>
+                        No catches match your current filters. Try adjusting your search criteria.
+                    <% } else { %>
+                        Be the first to share your amazing catch with the community!
+                    <% } %>
+                </p>
+                <% if (locals.currentUser) { %>
+                    <a href="/catches/new" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg transition transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i> Log Your First Catch
+                    </a>
                 <% } %>
             </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h2>
-            <div class="space-y-4">
-                <% if (recentActivity && recentActivity.length > 0) { %>
-                    <% recentActivity.forEach(activity => { %>
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <img src="<%= activity.user.profilePicture || '/images/default-avatar.png' %>" 
-                                     alt="<%= activity.user.username %>" 
-                                     class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-gray-900">
-                                    <a href="/users/<%= activity.user._id %>" class="font-medium hover:underline">
-                                        <%= activity.user.username %>
-                                    </a>
-                                    <%= activity.action %>
-                                    <% if (activity.type === 'catch') { %>
-                                        <a href="/catches/<%= activity.referenceId %>" class="font-medium text-blue-600 hover:underline">
-                                            <%= activity.details.species %>
-                                        </a>
-                                    <% } else if (activity.type === 'trip') { %>
-                                        <a href="/trips/<%= activity.referenceId %>" class="font-medium text-blue-600 hover:underline">
-                                            <%= activity.details.title %>
-                                        </a>
-                                    <% } %>
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    <%= new Date(activity.timestamp).toLocaleString('en-US', { 
-                                        month: 'short', 
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    }) %>
-                                </p>
-                            </div>
-                        </div>
-                    <% }); %>
-                <% } else { %>
-                    <p class="text-sm text-gray-500">No recent activity to display.</p>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</div>
+        <% } %>
     </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center text-gray-600">
+                <p class="text-sm">
+                    &copy; <%= new Date().getFullYear() %> FishBook. Made with <i class="fas fa-heart text-red-500"></i> by anglers, for anglers.
+                </p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

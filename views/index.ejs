@@ -1,107 +1,169 @@
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-    <!-- Main Content -->
-    <div class="lg:col-span-3 space-y-6">
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to FishBook</h1>
-            <p class="text-gray-600 mb-6">Connect with fellow anglers, share your catches, and plan your next fishing adventure.</p>
-            
-            <% if (!locals.currentUser) { %>
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="/auth/register" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300">
-                        Join Now
-                    </a>
-                    <a href="/auth/login" class="bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-3 px-6 rounded-lg text-center transition duration-300">
-                        Sign In
-                    </a>
-                </div>
-            <% } else { %>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                    <a href="/catches/new" class="bg-white border-2 border-blue-100 rounded-lg p-6 hover:shadow-md transition duration-300">
-                        <div class="text-blue-600 text-4xl mb-4">
-                            <i class="fas fa-fish"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2">Log a Catch</h3>
-                        <p class="text-gray-600">Share your latest fishing success with the community.</p>
-                    </a>
-                    
-                    <a href="/trips/new" class="bg-white border-2 border-blue-100 rounded-lg p-6 hover:shadow-md transition duration-300">
-                        <div class="text-blue-600 text-4xl mb-4">
-                            <i class="fas fa-calendar-plus"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2">Plan a Trip</h3>
-                        <p class="text-gray-600">Organize a fishing trip and invite others to join.</p>
-                    </a>
-                    
-                    <a href="/explore" class="bg-white border-2 border-blue-100 rounded-lg p-6 hover:shadow-md transition duration-300">
-                        <div class="text-blue-600 text-4xl mb-4">
-                            <i class="fas fa-compass"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2">Explore</h3>
-                        <p class="text-gray-600">Discover fishing spots and connect with other anglers.</p>
-                    </a>
-                </div>
-            <% } %>
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-2xl mb-8 p-8 md:p-12">
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-40 h-40 bg-white opacity-5 rounded-full hero-float"></div>
+    <div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-white opacity-5 rounded-full hero-float" style="animation-delay: 1s;"></div>
+    <div class="absolute top-1/2 right-1/4 w-24 h-24 bg-white opacity-5 rounded-full hero-float" style="animation-delay: 2s;"></div>
+    
+    <!-- Shimmer Effect -->
+    <div class="absolute inset-0 shimmer pointer-events-none"></div>
+    
+    <div class="relative z-10">
+        <div class="flex items-center mb-4 fade-in">
+            <i class="fas fa-fish text-white text-5xl mr-4 hero-float"></i>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg">Welcome to FishBook</h1>
         </div>
+        <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl fade-in" style="animation-delay: 0.2s;">Connect with fellow anglers, share your catches, and plan your next fishing adventure. Join our thriving community today!</p>
+        
+        <% if (!locals.currentUser) { %>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="/auth/register" class="inline-flex items-center justify-center bg-white text-blue-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl text-center transition transform hover:scale-105 shadow-xl">
+                    <i class="fas fa-user-plus mr-2"></i> Join Now
+                </a>
+                <a href="/auth/login" class="inline-flex items-center justify-center bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold py-4 px-8 rounded-xl text-center transition duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+                </a>
+            </div>
+        <% } else { %>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a href="/catches/new" class="group bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 rounded-xl p-6 hover:bg-opacity-20 hover:border-opacity-50 transition duration-300 transform hover:scale-105">
+                    <div class="text-white text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Log a Catch</h3>
+                    <p class="text-blue-100">Share your latest fishing success with the community.</p>
+                </a>
+                
+                <a href="/trips/new" class="group bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 rounded-xl p-6 hover:bg-opacity-20 hover:border-opacity-50 transition duration-300 transform hover:scale-105">
+                    <div class="text-white text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Plan a Trip</h3>
+                    <p class="text-blue-100">Organize a fishing trip and invite others to join.</p>
+                </a>
+                
+                <a href="/explore" class="group bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 rounded-xl p-6 hover:bg-opacity-20 hover:border-opacity-50 transition duration-300 transform hover:scale-105">
+                    <div class="text-white text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Explore</h3>
+                    <p class="text-blue-100">Discover fishing spots and connect with other anglers.</p>
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="stat-card bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-110 transition duration-300 border-2 border-transparent hover:border-blue-300">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 mb-4 shadow-lg">
+            <i class="fas fa-fish text-white text-3xl"></i>
+        </div>
+        <h3 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-1"><%= catches ? catches.length : 0 %></h3>
+        <p class="text-gray-600 font-semibold text-lg">Recent Catches</p>
     </div>
     
-    <!-- Weather Sidebar -->
-    <div class="lg:col-span-1">
-        <%- include('partials/weather-sidebar', { weather: weather }) %>
+    <div class="stat-card bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-110 transition duration-300 border-2 border-transparent hover:border-green-300">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-teal-500 mb-4 shadow-lg">
+            <i class="fas fa-calendar-check text-white text-3xl"></i>
+        </div>
+        <h3 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600 mb-1"><%= trips ? trips.length : 0 %></h3>
+        <p class="text-gray-600 font-semibold text-lg">Upcoming Trips</p>
+    </div>
+    
+    <div class="stat-card bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-110 transition duration-300 border-2 border-transparent hover:border-purple-300">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4 shadow-lg">
+            <i class="fas fa-users text-white text-3xl"></i>
+        </div>
+        <h3 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-1">1,000+</h3>
+        <p class="text-gray-600 font-semibold text-lg">Active Anglers</p>
     </div>
 </div>
 
 <!-- Latest Catches -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-6">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">Recent Catches</h2>
-        <a href="/catches" class="text-blue-600 hover:underline">View All</a>
+<div class="bg-white rounded-xl shadow-md p-8 mb-8">
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center">
+            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center mr-4">
+                <i class="fas fa-fish text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">Recent Catches</h2>
+                <p class="text-gray-500 text-sm">Check out the latest catches from our community</p>
+            </div>
+        </div>
+        <a href="/catches" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg transition transform hover:scale-105 shadow-md">
+            View All <i class="fas fa-arrow-right ml-2"></i>
+        </a>
     </div>
     
     <% if (catches && catches.length > 0) { %>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <% catches.forEach(catchItem => { %>
-                <div class="border rounded-lg overflow-hidden hover:shadow-md transition duration-300">
-                    <div class="h-48 bg-gray-200 overflow-hidden">
-                        <img src="<%= catchItem.image || '/images/default-catch.jpg' %>" 
-                             alt="<%= catchItem.species %>" 
-                             class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-lg"><%= catchItem.species %></h3>
-                                <p class="text-gray-600 text-sm">
-                                    <i class="fas fa-weight-hanging mr-1"></i>
-                                    <%= catchItem.weight %> kg
-                                </p>
+                <div class="catch-card bg-white border-2 border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
+                    <div class="relative h-56 bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-500 overflow-hidden group">
+                        <% if (catchItem.image) { %>
+                            <img src="/<%= catchItem.image %>" 
+                                 alt="<%= catchItem.species %>" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <% } else { %>
+                            <div class="flex items-center justify-center h-full">
+                                <i class="fas fa-fish text-white text-7xl opacity-40 group-hover:opacity-60 transition-opacity duration-300"></i>
                             </div>
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                                <%= catchItem.location.name %>
+                        <% } %>
+                        <!-- Gradient Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-bold text-xl text-gray-800 mb-1"><%= catchItem.species %></h3>
+                                <div class="flex items-center space-x-3">
+                                    <span class="inline-flex items-center text-blue-600 text-sm font-semibold">
+                                        <i class="fas fa-weight-hanging mr-1"></i>
+                                        <%= catchItem.weight %> kg
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                                <i class="fas fa-map-marker-alt mr-1"></i><%= catchItem.location.name %>
                             </span>
                         </div>
-                        <div class="mt-3 flex items-center text-sm text-gray-500">
-                            <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
-                                 alt="<%= catchItem.user.username %>" 
-                                 class="w-6 h-6 rounded-full mr-2">
-                            <span><%= catchItem.user.username %></span>
-                            <span class="mx-1">•</span>
-                            <span><%= new Date(catchItem.dateCaught).toLocaleDateString() %></span>
+                        <div class="mt-4 flex items-center justify-between text-sm text-gray-500 pt-4 border-t-2 border-gray-100">
+                            <div class="flex items-center">
+                                <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
+                                     alt="<%= catchItem.user.username %>" 
+                                     class="w-8 h-8 rounded-full mr-2 border-2 border-blue-200 shadow-sm">
+                                <span class="font-semibold text-gray-700"><%= catchItem.user.username %></span>
+                            </div>
+                            <span class="text-xs font-medium text-gray-400">
+                                <i class="far fa-clock mr-1"></i><%= new Date(catchItem.dateCaught).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                            </span>
                         </div>
+                        <a href="/catches/<%= catchItem._id %>" class="mt-4 block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-xl font-semibold transition transform hover:scale-105 shadow-md hover:shadow-lg">
+                            View Details <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
                     </div>
                 </div>
             <% }); %>
         </div>
     <% } else { %>
-        <div class="text-center py-8 text-gray-500">
-            <i class="fas fa-fish text-4xl mb-3 text-gray-300"></i>
-            <p>No catches yet. Be the first to share your catch!</p>
+        <div class="text-center py-16">
+            <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 mb-6 shadow-lg">
+                <i class="fas fa-fish text-6xl text-blue-600 animate-pulse"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">No Catches Yet</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">Be the first to share your amazing catch with our community!</p>
             <% if (locals.currentUser) { %>
-                <a href="/catches/new" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
-                    Share Your Catch
+                <a href="/catches/new" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-plus-circle mr-3 text-xl"></i> Share Your First Catch
                 </a>
             <% } else { %>
-                <a href="/auth/register" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
-                    Join Now to Share
+                <a href="/auth/register" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-user-plus mr-3 text-xl"></i> Join Now to Share
                 </a>
             <% } %>
         </div>
@@ -109,77 +171,105 @@
 </div>
 
 <!-- Upcoming Trips -->
-<div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">Upcoming Trips</h2>
-        <a href="/trips" class="text-blue-600 hover:underline">View All</a>
+<div class="bg-white rounded-xl shadow-md p-8">
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center">
+            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center mr-4">
+                <i class="fas fa-calendar-check text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">Upcoming Trips</h2>
+                <p class="text-gray-500 text-sm">Join exciting fishing adventures with fellow anglers</p>
+            </div>
+        </div>
+        <a href="/trips" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-medium rounded-lg transition transform hover:scale-105 shadow-md">
+            View All <i class="fas fa-arrow-right ml-2"></i>
+        </a>
     </div>
     
     <% if (trips && trips.length > 0) { %>
-        <div class="space-y-4">
+        <div class="space-y-5">
             <% trips.forEach(trip => { %>
-                <div class="border rounded-lg p-4 hover:shadow-md transition duration-300">
+                <div class="catch-card bg-gradient-to-r from-gray-50 to-blue-50 border-2 border-gray-100 rounded-2xl p-6 hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                        <div class="mb-3 sm:mb-0">
-                            <h3 class="font-semibold text-lg">
-                                <a href="/trips/<%= trip._id %>" class="hover:underline"><%= trip.title %></a>
+                        <div class="mb-4 sm:mb-0 flex-1">
+                            <h3 class="font-bold text-xl text-gray-800 mb-2">
+                                <a href="/trips/<%= trip._id %>" class="hover:text-blue-600 transition flex items-center">
+                                    <%= trip.title %>
+                                    <i class="fas fa-external-link-alt text-sm ml-2 text-gray-400"></i>
+                                </a>
                             </h3>
-                            <div class="flex items-center text-sm text-gray-600 mt-1">
-                                <i class="fas fa-map-marker-alt mr-1"></i>
-                                <span><%= trip.location.name %></span>
+                            <div class="flex flex-wrap items-center gap-4 text-sm">
+                                <div class="flex items-center text-gray-600">
+                                    <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center mr-2">
+                                        <i class="fas fa-map-marker-alt text-red-500"></i>
+                                    </div>
+                                    <span class="font-medium"><%= trip.location.name %></span>
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mr-2">
+                                        <i class="far fa-calendar-alt text-blue-500"></i>
+                                    </div>
+                                    <span class="font-medium">
+                                        <%= new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> - 
+                                        <%= new Date(trip.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="flex flex-col sm:items-end">
-                            <div class="text-sm text-gray-600">
-                                <i class="far fa-calendar-alt mr-1"></i>
-                                <%= new Date(trip.startDate).toLocaleDateString() %> - 
-                                <%= new Date(trip.endDate).toLocaleDateString() %>
-                            </div>
-                            <div class="mt-1">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                    <%= trip.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : 
-                                       trip.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
-                                       trip.status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                       'bg-red-100 text-red-800' %>">
-                                    <%= trip.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
-                                </span>
-                            </div>
+                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold shadow-sm mb-3
+                                <%= trip.status === 'upcoming' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' : 
+                                   trip.status === 'in_progress' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white' : 
+                                   trip.status === 'completed' ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white' : 
+                                   'bg-gradient-to-r from-red-500 to-pink-500 text-white' %>">
+                                <i class="fas fa-circle text-xs mr-2"></i>
+                                <%= trip.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
+                            </span>
                         </div>
                     </div>
-                    <div class="mt-3 flex items-center justify-between">
-                        <div class="flex -space-x-2">
-                            <% trip.participants.slice(0, 5).forEach(participant => { %>
-                                <img src="<%= participant.user.profilePicture || '/images/default-avatar.png' %>" 
-                                     alt="<%= participant.user.username %>" 
-                                     class="w-8 h-8 rounded-full border-2 border-white"
-                                     title="<%= participant.user.username %>">
-                            <% }); %>
-                            <% if (trip.participants.length > 5) { %>
-                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-xs font-medium">
-                                    +<%= trip.participants.length - 5 %>
-                                </span>
-                            <% } %>
+                    <div class="mt-5 flex items-center justify-between pt-5 border-t-2 border-white">
+                        <div class="flex items-center">
+                            <span class="text-sm font-semibold text-gray-600 mr-3">Participants:</span>
+                            <div class="flex -space-x-3">
+                                <% trip.participants.slice(0, 5).forEach(participant => { %>
+                                    <img src="<%= participant.user.profilePicture || '/images/default-avatar.png' %>" 
+                                         alt="<%= participant.user.username %>" 
+                                         class="w-10 h-10 rounded-full border-3 border-white shadow-md hover:scale-110 transition-transform duration-200"
+                                         title="<%= participant.user.username %>">
+                                <% }); %>
+                                <% if (trip.participants.length > 5) { %>
+                                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 text-white text-sm font-bold border-3 border-white shadow-md">
+                                        +<%= trip.participants.length - 5 %>
+                                    </span>
+                                <% } %>
+                            </div>
                         </div>
-                        <a href="/trips/<%= trip._id %>" class="text-blue-600 hover:underline text-sm">
-                            View Details →
+                        <a href="/trips/<%= trip._id %>" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg transition transform hover:scale-105 shadow-md">
+                            View Details <i class="fas fa-arrow-right ml-2"></i>
                         </a>
                     </div>
                 </div>
             <% }); %>
         </div>
     <% } else { %>
-        <div class="text-center py-8 text-gray-500">
-            <i class="fas fa-calendar-alt text-4xl mb-3 text-gray-300"></i>
-            <p>No upcoming trips. Plan your next fishing adventure!</p>
+        <div class="text-center py-16">
+            <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-green-100 via-teal-100 to-blue-100 mb-6 shadow-lg">
+                <i class="fas fa-calendar-alt text-6xl text-green-600 animate-pulse"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">No Upcoming Trips</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">Plan your next fishing adventure and invite fellow anglers to join!</p>
             <% if (locals.currentUser) { %>
-                <a href="/trips/new" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
-                    Create a Trip
+                <a href="/trips/new" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-calendar-plus mr-3 text-xl"></i> Create Your First Trip
                 </a>
             <% } else { %>
-                <a href="/auth/register" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
-                    Join Now to Plan
+                <a href="/auth/register" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-xl transition transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-user-plus mr-3 text-xl"></i> Join Now to Plan
                 </a>
             <% } %>
         </div>
     <% } %>
 </div>
+
+<%- include('partials/footer') %>
