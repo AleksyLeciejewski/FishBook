@@ -12,7 +12,8 @@ import {
   addComment,
   toggleLike,
   renderNewCatchForm,
-  renderCatchesIndex
+  renderCatchesIndex,
+  renderCatchDetail
 } from '../controllers/catchController.js';
 import auth from '../middleware/auth.js';
 import sessionAuth from '../middleware/sessionAuth.js';
@@ -66,9 +67,14 @@ router.get('/new', sessionAuth, renderNewCatchForm);
 router.get('/api', getCatches);
 
 // @route   GET /catches/:id
-// @desc    Get catch by ID
+// @desc    Render catch detail page
 // @access  Public
-router.get('/:id', getCatchById);
+router.get('/:id', renderCatchDetail);
+
+// @route   GET /api/catches/:id
+// @desc    Get catch by ID (API)
+// @access  Public
+router.get('/api/:id', getCatchById);
 
 // @route   POST /catches
 // @desc    Create a catch
@@ -114,13 +120,13 @@ router.put(
 // @access  Private
 router.delete('/:id', auth, deleteCatch);
 
-// @route   POST /api/catches/:id/comments
+// @route   POST /catches/:id/comments
 // @desc    Add comment to a catch
 // @access  Private
 router.post(
   '/:id/comments',
   [
-    auth,
+    sessionAuth,
     [
       check('text', 'Text is required').not().isEmpty(),
       check('text', 'Comment cannot be longer than 500 characters').isLength({ max: 500 })
@@ -129,9 +135,9 @@ router.post(
   addComment
 );
 
-// @route   POST /api/catches/:id/like
+// @route   POST /catches/:id/like
 // @desc    Like or unlike a catch
 // @access  Private
-router.post('/:id/like', auth, toggleLike);
+router.post('/:id/like', sessionAuth, toggleLike);
 
 export default router;

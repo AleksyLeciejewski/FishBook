@@ -286,10 +286,19 @@
                                 
                                 <!-- Actions -->
                                 <div class="flex items-center space-x-3 text-sm">
-                                    <button class="flex items-center text-gray-500 hover:text-red-500 transition">
-                                        <i class="far fa-heart mr-1"></i>
-                                        <span><%= catchItem.likes.length %></span>
-                                    </button>
+                                    <% if (currentUser) { %>
+                                        <button class="like-btn flex items-center <%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'text-red-500' : 'text-gray-500' %> hover:text-red-500 transition"
+                                                data-catch-id="<%= catchItem._id %>"
+                                                data-liked="<%= catchItem.likes.some(like => String(like) === String(currentUser._id)) %>">
+                                            <i class="<%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'fas' : 'far' %> fa-heart mr-1"></i>
+                                            <span class="like-count"><%= catchItem.likes.length %></span>
+                                        </button>
+                                    <% } else { %>
+                                        <a href="/auth/login" class="flex items-center text-gray-500 hover:text-red-500 transition">
+                                            <i class="far fa-heart mr-1"></i>
+                                            <span><%= catchItem.likes.length %></span>
+                                        </a>
+                                    <% } %>
                                     <a href="/catches/<%= catchItem._id %>" class="flex items-center text-gray-500 hover:text-blue-600 transition">
                                         <i class="far fa-comment mr-1"></i>
                                         <span><%= catchItem.comments ? catchItem.comments.length : 0 %></span>
@@ -373,5 +382,53 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // Like functionality
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const catchId = this.dataset.catchId;
+                const isLiked = this.dataset.liked === 'true';
+                
+                try {
+                    const response = await fetch(`/catches/${catchId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const icon = this.querySelector('i');
+                        const count = this.querySelector('.like-count');
+                        
+                        count.textContent = data.likes.length;
+                        
+                        if (isLiked) {
+                            this.classList.remove('text-red-500');
+                            this.classList.add('text-gray-500');
+                            icon.classList.remove('fas');
+                            icon.classList.add('far');
+                            this.dataset.liked = 'false';
+                        } else {
+                            this.classList.add('text-red-500');
+                            this.classList.remove('text-gray-500');
+                            icon.classList.remove('far');
+                            icon.classList.add('fas');
+                            this.dataset.liked = 'true';
+                        }
+                    } else {
+                        console.error('Error toggling like');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

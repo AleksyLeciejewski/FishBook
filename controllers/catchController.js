@@ -108,6 +108,34 @@ export const getCatches = async (req, res) => {
     }
 };
 
+export const renderCatchDetail = async (req, res) => {
+    try {
+        const catchItem = await Catch.findById(req.params.id)
+            .populate('user', 'username profilePicture')
+            .populate('comments.user', 'username profilePicture');
+            
+        if (!catchItem) {
+            return res.status(404).render('error', {
+                title: 'Error',
+                error: 'Catch not found',
+                message: 'The catch you are looking for does not exist.'
+            });
+        }
+
+        res.render('catches/show', {
+            title: `${catchItem.species} - FishBook`,
+            catchItem
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).render('error', {
+            title: 'Error',
+            error: 'Error loading catch',
+            message: err.message
+        });
+    }
+};
+
 export const getCatchById = async (req, res) => {
     try {
         const catchItem = await Catch.findById(req.params.id)
@@ -301,8 +329,9 @@ export const addComment = async (req, res) => {
             return res.status(404).json({ msg: 'Catch not found' });
         }
         
+        const userId = req.user._id || req.user.id;
         const newComment = {
-            user: req.user.id,
+            user: userId,
             text
         };
         
@@ -327,19 +356,21 @@ export const toggleLike = async (req, res) => {
             return res.status(404).json({ msg: 'Catch not found' });
         }
         
+        const userId = req.user._id || req.user.id;
+        
         // Check if the catch has already been liked by this user
         const isLiked = catchItem.likes.some(
-            like => like.toString() === req.user.id
+            like => like.toString() === userId.toString()
         );
         
         if (isLiked) {
             // Remove like
             catchItem.likes = catchItem.likes.filter(
-                like => like.toString() !== req.user.id
+                like => like.toString() !== userId.toString()
             );
         } else {
             // Add like
-            catchItem.likes.unshift(req.user.id);
+            catchItem.likes.unshift(userId);
         }
         
         await catchItem.save();
