@@ -17,12 +17,14 @@ router.get('/', async (req, res) => {
 
         // Fetch upcoming trips (limit to 3)
         const upcomingTrips = await Trip.find({ 
-            date: { $gte: new Date() },
-            isPublic: true
+            startDate: { $gte: new Date() },
+            isPublic: true,
+            status: 'upcoming'
         })
-            .sort({ date: 1 })
+            .sort({ startDate: 1 })
             .limit(3)
             .populate('createdBy', 'username profilePicture')
+            .populate('participants.user', 'username profilePicture')
             .lean();
 
         // Get weather data for a default location (Copenhagen)

@@ -49,7 +49,8 @@ app.set('view engine', 'ejs');
 const uploadDirs = [
     path.join(__dirname, 'public', 'uploads'),
     path.join(__dirname, 'public', 'uploads', 'catches'),
-    path.join(__dirname, 'public', 'uploads', 'profile-pictures')
+    path.join(__dirname, 'public', 'uploads', 'profile-pictures'),
+    path.join(__dirname, 'public', 'uploads', 'trips')
 ];
 
 uploadDirs.forEach(dir => {

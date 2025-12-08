@@ -23,16 +23,20 @@ export const getTrips = async (req, res) => {
 
         const trips = await Trip.find(query)
             .populate('createdBy', 'username profilePicture')
+            .populate('participants.user', 'username profilePicture')
             .sort({ startDate: 1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
         const count = await Trip.countDocuments(query);
 
-        res.json({
+        res.render('trips/index', {
+            title: 'Fishing Trips',
             trips,
             totalPages: Math.ceil(count / limit),
-            currentPage: page
+            currentPage: parseInt(page),
+            location: location || '',
+            status: status || ''
         });
     } catch (err) {
         console.error(err.message);
@@ -47,14 +51,23 @@ export const getTripById = async (req, res) => {
             .populate('participants.user', 'username profilePicture');
             
         if (!trip) {
-            return res.status(404).json({ msg: 'Trip not found' });
+            return res.status(404).render('404', {
+                title: 'Trip Not Found',
+                path: req.originalUrl
+            });
         }
 
-        res.json(trip);
+        res.render('trips/show', {
+            title: trip.title,
+            trip
+        });
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {
-            return res.status(404).json({ msg: 'Trip not found' });
+            return res.status(404).render('404', {
+                title: 'Trip Not Found',
+                path: req.originalUrl
+            });
         }
         res.status(500).send('Server Error');
     }
@@ -64,18 +77,23 @@ export const createTrip = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).render('trips/new', {
+                title: 'Plan a Trip',
+                errors: errors.array()
+            });
         }
 
         const { 
             title, 
             description, 
-            location, 
+            lat,
+            lng,
+            locationName,
             startDate, 
             endDate, 
             maxParticipants, 
             isPublic = true,
-            tags = [] 
+            tags = '' 
         } = req.body;
         
         const newTrip = new Trip({
@@ -83,31 +101,35 @@ export const createTrip = async (req, res) => {
             description,
             location: {
                 type: 'Point',
-                coordinates: [location.lng, location.lat],
-                name: location.name
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+                name: locationName
             },
             startDate,
             endDate,
             maxParticipants: maxParticipants || 10,
-            isPublic,
-            createdBy: req.user.id,
+            isPublic: isPublic === 'true',
+            createdBy: req.user._id || req.user.id,
             participants: [{
-                user: req.user.id,
+                user: req.user._id || req.user.id,
                 status: 'confirmed'
             }],
-            tags: Array.isArray(tags) ? tags : [tags],
+            tags: tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
             status: 'upcoming'
         });
 
+        if (req.files && req.files.length > 0) {
+            newTrip.images = req.files.map(file => file.path.replace(/\\/g, '/'));
+        }
+
         await newTrip.save();
         
-        // Populate the createdBy field for the response
-        await newTrip.populate('createdBy', 'username profilePicture');
-        
-        res.status(201).json(newTrip);
+        res.redirect(`/trips/${newTrip._id}`);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).render('trips/new', {
+            title: 'Plan a Trip',
+            errors: [{ msg: 'Server error occurred' }]
+        });
     }
 };
 
@@ -132,7 +154,8 @@ export const updateTrip = async (req, res) => {
         }
         
         // Check if user is the creator
-        if (trip.createdBy.toString() !== req.user.id) {
+        const userId = req.user._id || req.user.id;
+        if (trip.createdBy.toString() !== userId.toString()) {
             return res.status(401).json({ msg: 'User not authorized' });
         }
 
@@ -181,7 +204,8 @@ export const deleteTrip = async (req, res) => {
         }
         
         // Check if user is the creator or admin
-        if (trip.createdBy.toString() !== req.user.id && !req.user.isAdmin) {
+        const userId = req.user._id || req.user.id;
+        if (trip.createdBy.toString() !== userId.toString() && !req.user.isAdmin) {
             return res.status(401).json({ msg: 'User not authorized' });
         }
 
@@ -210,8 +234,9 @@ export const joinTrip = async (req, res) => {
         }
         
         // Check if already a participant
+        const userId = req.user._id || req.user.id;
         const isParticipant = trip.participants.some(
-            p => p.user.toString() === req.user.id
+            p => p.user.toString() === userId.toString()
         );
         
         if (isParticipant) {
@@ -225,7 +250,7 @@ export const joinTrip = async (req, res) => {
         
         // Add user as a participant
         trip.participants.push({
-            user: req.user.id,
+            user: userId,
             status: 'pending'
         });
         
@@ -256,7 +281,8 @@ export const updateParticipantStatus = async (req, res) => {
         }
         
         // Check if user is the trip creator
-        if (trip.createdBy.toString() !== req.user.id) {
+        const userId = req.user._id || req.user.id;
+        if (trip.createdBy.toString() !== userId.toString()) {
             return res.status(401).json({ msg: 'Not authorized to update participant status' });
         }
         
