@@ -17,6 +17,7 @@ import userRouter from './routes/users.js';
 import weatherRouter from './routes/weather.js';
 import fishingSpotsRouter from './routes/fishingSpots.js';
 import exploreRouter from './routes/explore.js';
+import draftRouter from './routes/drafts.js';
 
 // Load environment variables
 dotenv.config();
@@ -95,7 +96,8 @@ app.use('/catches', catchRouter);
 app.use('/trips', tripRouter);
 app.use('/users', userRouter);
 app.use('/fishing-spots', fishingSpotsRouter);
-app.use('/explore', exploreRouter);  // Explicitly mount at /explore
+app.use('/explore', exploreRouter); // Explicitly mount at /explore
+app.use('/drafts', draftRouter);
 
 // Debug route to list all registered routes
 app.get('/debug-routes', (req, res) => {
