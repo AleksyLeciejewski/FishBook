@@ -12,7 +12,7 @@ import {
   joinTrip,
   updateParticipantStatus
 } from '../controllers/tripController.js';
-import auth from '../middleware/auth.js';
+import requireLogin from '../middleware/requireLogin.js';
 
 const router = express.Router();
 
@@ -47,37 +47,43 @@ const upload = multer({
   }
 });
 
-// @route   GET /api/trips
+// @route   GET /trips
 // @desc    Get all trips
 // @access  Public
 router.get('/', getTrips);
 
-// @route   GET /api/trips/:id
+// @route   GET /trips/new
+// @desc    Render new trip form
+// @access  Private
+// NOTE: This must come BEFORE /:id route to avoid conflicts
+router.get('/new', requireLogin, (req, res) => {
+    res.render('trips/new', {
+        title: 'Plan a Trip',
+        errors: []
+    });
+});
+
+// @route   GET /trips/:id
 // @desc    Get trip by ID
 // @access  Public
 router.get('/:id', getTripById);
 
-// @route   POST /api/trips
+// @route   POST /trips
 // @desc    Create a trip
 // @access  Private
 router.post(
   '/',
+  requireLogin,
+  upload.array('images', 5),
   [
-    auth,
-    upload.array('images', 5), // Allow up to 5 images
-    [
-      check('title', 'Title is required').not().isEmpty(),
-      check('description', 'Description cannot be longer than 2000 characters').optional().isLength({ max: 2000 }),
-      check('location', 'Location is required').isObject(),
-      check('location.lat', 'Latitude is required and must be a number').isNumeric(),
-      check('location.lng', 'Longitude is required and must be a number').isNumeric(),
-      check('location.name', 'Location name is required').not().isEmpty(),
-      check('startDate', 'Start date is required').isISO8601(),
-      check('endDate', 'End date is required').isISO8601(),
-      check('maxParticipants', 'Max participants must be a number').optional().isInt({ min: 1 }),
-      check('isPublic', 'isPublic must be a boolean').optional().isBoolean(),
-      check('tags', 'Tags must be an array').optional().isArray()
-    ]
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description cannot be longer than 2000 characters').optional().isLength({ max: 2000 }),
+    check('lat', 'Latitude is required and must be a number').isNumeric(),
+    check('lng', 'Longitude is required and must be a number').isNumeric(),
+    check('locationName', 'Location name is required').not().isEmpty(),
+    check('startDate', 'Start date is required').isISO8601(),
+    check('endDate', 'End date is required').isISO8601(),
+    check('maxParticipants', 'Max participants must be a number').optional().isInt({ min: 1 })
   ],
   createTrip
 );
@@ -88,7 +94,7 @@ router.post(
 router.put(
   '/:id',
   [
-    auth,
+    requireLogin,
     upload.array('images', 5), // Allow up to 5 images
     [
       check('title', 'Title is required').optional().not().isEmpty(),
@@ -108,28 +114,26 @@ router.put(
   updateTrip
 );
 
-// @route   DELETE /api/trips/:id
+// @route   DELETE /trips/:id
 // @desc    Delete a trip
 // @access  Private
-router.delete('/:id', auth, deleteTrip);
+router.delete('/:id', requireLogin, deleteTrip);
 
-// @route   POST /api/trips/:id/join
+// @route   POST /trips/:id/join
 // @desc    Join a trip
 // @access  Private
-router.post('/:id/join', auth, joinTrip);
+router.post('/:id/join', requireLogin, joinTrip);
 
-// @route   PUT /api/trips/:id/participants
+// @route   PUT /trips/:id/participants
 // @desc    Update participant status (for trip creator)
 // @access  Private
 router.put(
   '/:id/participants',
+  requireLogin,
   [
-    auth,
-    [
-      check('participantId', 'Participant ID is required').not().isEmpty(),
-      check('status', 'Status is required and must be one of: pending, confirmed, declined')
-        .isIn(['pending', 'confirmed', 'declined'])
-    ]
+    check('participantId', 'Participant ID is required').not().isEmpty(),
+    check('status', 'Status is required and must be one of: pending, confirmed, declined')
+      .isIn(['pending', 'confirmed', 'declined'])
   ],
   updateParticipantStatus
 );
