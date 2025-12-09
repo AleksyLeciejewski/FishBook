@@ -1,4 +1,3 @@
-// File: `routes/auth.js`
 import express from 'express';
 import { check } from 'express-validator';
 import { register, login, getCurrentUser, updateProfile } from '../controllers/authController.js';
@@ -45,6 +44,19 @@ router.post(
     ],
     login
 );
+
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.redirect('/');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/auth/login');
+    });
+});
+
+
 
 // Protected user endpoints
 router.get('/me', auth, getCurrentUser);

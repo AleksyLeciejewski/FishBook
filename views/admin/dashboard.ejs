@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - <%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-table {
+            font-size: 0.9rem;
+            border-spacing: 0;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem 1.5rem;
+        }
+
+        .admin-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .admin-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input, .filter-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            min-width: 200px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .action-cell {
+            white-space: nowrap;
+            padding: 1rem !important;
+        }
+
+        .btn-small {
+            margin: 0.25rem 0.5rem;
+            padding: 0.6rem 1rem;
+        }
+
+        .btn-icon {
+            font-size: 0.9em;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-trend, .stat-detail {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .stat-trend.positive {
+            color: #28a745;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .admin-controls {
+                width: 100%;
+            }
+
+            .search-input, .filter-select {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .admin-table {
+                font-size: 0.85rem;
+            }
+
+            .btn-small .btn-icon {
+                display: inline;
+            }
+
+            .btn-small {
+                padding: 0.4rem 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Enhanced Stats Section with Icons and Trends -->
+    <div class="admin-stats">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <h3>Total Users</h3>
+            <p class="stat-number"><%= stats.totalUsers %></p>
+            <% if (stats.newUsersThisWeek) { %>
+                <span class="stat-trend positive">+<%= stats.newUsersThisWeek %> this week</span>
+            <% } %>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🎣</div>
+            <h3>Total Catches</h3>
+            <p class="stat-number"><%= stats.totalCatches %></p>
+            <% if (stats.avgCatchesPerUser) { %>
+                <span class="stat-detail"><%= stats.avgCatchesPerUser.toFixed(1) %> per user</span>
+            <% } %>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🚤</div>
+            <h3>Total Trips</h3>
+            <p class="stat-number"><%= stats.totalTrips %></p>
+            <% if (stats.activeTrips) { %>
+                <span class="stat-detail"><%= stats.activeTrips %> active</span>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="admin-section">
+        <div class="section-header">
+            <h2>User Management</h2>
+            <div class="admin-controls">
+                <input type="text" id="searchUsers" placeholder="Search users..." class="search-input">
+                <select id="filterRole" class="filter-select">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+                <select id="filterVerified" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="verified">Verified</option>
+                    <option value="unverified">Unverified</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Enhanced Table with Better Responsiveness -->
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Verified</th>
+                    <th>Joined</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                <% users.forEach(user => { %>
+                    <tr data-user-id="<%= user._id %>"
+                        data-role="<%= user.role %>"
+                        data-verified="<%= user.isVerified ? 'verified' : 'unverified' %>">
+                        <td>
+                            <strong><%= user.username %></strong>
+                        </td>
+                        <td><%= user.email %></td>
+                        <td>
+                            <span class="badge badge-<%= user.role %>"><%= user.role %></span>
+                        </td>
+                        <td>
+                            <span class="badge <%= user.isVerified ? 'badge-verified' : 'badge-unverified' %>">
+                                <%= user.isVerified ? '✓ Verified' : '✗ Unverified' %>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="date-text"><%= new Date(user.createdAt).toLocaleDateString() %></span>
+                        </td>
+                        <td class="action-cell">
+                            <button class="btn-small btn-primary"
+                                    onclick="toggleRole('<%= user._id %>', '<%= user.role %>')"
+                                    title="Change role">
+                                <span class="btn-icon">🔄</span> Toggle Role
+                            </button>
+                            <button class="btn-small <%= user.isVerified ? 'btn-warning' : 'btn-success' %>"
+                                    onclick="toggleVerification('<%= user._id %>', <%= user.isVerified %>)"
+                                    title="<%= user.isVerified ? 'Unverify' : 'Verify' %> user">
+                                <span class="btn-icon"><%= user.isVerified ? '✗' : '✓' %></span>
+                                <%= user.isVerified ? 'Unverify' : 'Verify' %>
+                            </button>
+                            <button class="btn-small btn-danger"
+                                    onclick="deleteUser('<%= user._id %>', '<%= user.username %>')"
+                                    title="Delete user">
+                                <span class="btn-icon">🗑️</span> Delete
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (users.length === 0) { %>
+            <div class="empty-state">
+                <p>No users found</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+</div>
+
+<script>
+    // Search and Filter Functionality
+    const searchInput = document.getElementById('searchUsers');
+    const roleFilter = document.getElementById('filterRole');
+    const verifiedFilter = document.getElementById('filterVerified');
+    const tableBody = document.getElementById('usersTableBody');
+
+    function filterUsers() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const roleValue = roleFilter.value;
+        const verifiedValue = verifiedFilter.value;
+        const rows = tableBody.getElementsByTagName('tr');
+
+        Array.from(rows).forEach(row => {
+            const username = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
+            const email = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+            const role = row.dataset.role;
+            const verified = row.dataset.verified;
+
+            const matchesSearch = username.includes(searchTerm) || email.includes(searchTerm);
+            const matchesRole = !roleValue || role === roleValue;
+            const matchesVerified = !verifiedValue || verified === verifiedValue;
+
+            row.style.display = matchesSearch && matchesRole && matchesVerified ? '' : 'none';
+        });
+    }
+
+    searchInput?.addEventListener('input', filterUsers);
+    roleFilter?.addEventListener('change', filterUsers);
+    verifiedFilter?.addEventListener('change', filterUsers);
+
+    // Toast Notification System
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Loading Overlay
+    function showLoading() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // Enhanced Toggle Role Function
+    async function toggleRole(userId, currentRole) {
+        const newRole = currentRole === 'admin' ? 'user' : 'admin';
+
+        if (!confirm(`Change user role from ${currentRole} to ${newRole}?`)) return;
+
+        showLoading();
+
+        try {
+            const res = await fetch(`/admin/users/${userId}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: newRole })
+            });
+
+            hideLoading();
+
+            if (res.ok) {
+                showToast(`User role updated to ${newRole}`, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                const error = await res.json();
+                showToast(error.message || 'Failed to update role', 'error');
+            }
+        } catch (err) {
+            hideLoading();
+            console.error(err);
+            showToast('Error updating role', 'error');
+        }
+    }
+
+    // Toggle Verification Function
+    async function toggleVerification(userId, isCurrentlyVerified) {
+        const action = isCurrentlyVerified ? 'unverify' : 'verify';
+
+        if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} this user?`)) return;
+
+        showLoading();
+
+        try {
+            const res = await fetch(`/admin/users/${userId}/verify`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isVerified: !isCurrentlyVerified })
+            });
+
+            hideLoading();
+
+            if (res.ok) {
+                showToast(`User ${action}ed successfully`, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                const error = await res.json();
+                showToast(error.message || `Failed to ${action} user`, 'error');
+            }
+        } catch (err) {
+            hideLoading();
+            console.error(err);
+            showToast(`Error ${action}ing user`, 'error');
+        }
+    }
+
+    // Enhanced Delete User Function
+    async function deleteUser(userId, username) {
+        if (!confirm(`Delete user "${username}"? This action cannot be undone.`)) return;
+
+        // Double confirmation for safety
+        if (!confirm('Are you absolutely sure? All user data will be permanently deleted.')) return;
+
+        showLoading();
+
+        try {
+            const res = await fetch(`/admin/users/${userId}`, {
+                method: 'DELETE'
+            });
+
+            hideLoading();
+
+            if (res.ok) {
+                showToast(`User "${username}" deleted successfully`, 'success');
+                // Remove row with animation
+                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                if (row) {
+                    row.style.transition = 'opacity 0.3s';
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 300);
+                }
+            } else {
+                const error = await res.json();
+                showToast(error.message || 'Failed to delete user', 'error');
+            }
+        } catch (err) {
+            hideLoading();
+            console.error(err);
+            showToast('Error deleting user', 'error');
+        }
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Focus search on Ctrl/Cmd + K
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput?.focus();
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

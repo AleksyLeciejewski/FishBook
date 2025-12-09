@@ -24,8 +24,10 @@ const userSchema = new mongoose.Schema({
         minlength: 6
     },
     profilePicture: {
-        type: String,
-        default: 'default-profile.png'
+        url: {
+            type: String,
+            default: '/uploads/profile-pictures/default-profile.png'
+        }
     },
     bio: {
         type: String,
@@ -36,10 +38,31 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    isAdmin: {
-        type: Boolean,
-        default: false
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
     },
+    followers: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    following: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     isVerified: {
         type: Boolean,
         default: false
@@ -47,13 +70,17 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpires: Date
 }, {
-    timestamps: true
+    timestamps: true,
+    isAdmin: {
+        type: Boolean,
+        default: false
+    }
 });
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) return next();
-    
+
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
