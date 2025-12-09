@@ -4,6 +4,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { 
+  renderUserProfile,
   getUserProfile,
   updateProfile,
   getUserCatches,
@@ -47,10 +48,10 @@ const upload = multer({
   }
 });
 
-// @route   GET /api/users/:id
-// @desc    Get user profile by ID
+// @route   GET /users/:id
+// @desc    Render user profile page
 // @access  Public
-router.get('/:id', getUserProfile);
+router.get('/:id', renderUserProfile);
 
 // @route   PUT /api/users/profile
 // @desc    Update user profile

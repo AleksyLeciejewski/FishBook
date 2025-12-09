@@ -1,9 +1,22 @@
-<div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="px-6 py-8">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Welcome Back</h1>
-            <p class="text-gray-600">Sign in to your FishBook account</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FishBook</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-gray-100">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm mb-4 shadow-lg">
+            <i class="fas fa-fish text-white text-4xl"></i>
         </div>
+        <h1 class="text-3xl font-bold text-white mb-2">Welcome Back!</h1>
+        <p class="text-blue-100">Sign in to continue your fishing journey</p>
+    </div>
+    <div class="px-8 py-8">
         
         <% if (errors && errors.length > 0) { %>
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
@@ -22,25 +35,31 @@
         
         <form action="/auth/login" method="POST" class="space-y-6">
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-envelope text-blue-600 mr-2"></i>Email Address
+                </label>
                 <input type="email" 
                        id="email" 
                        name="email" 
                        required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                       placeholder="your@email.com"
                        value="<%= typeof email !== 'undefined' ? email : '' %>">
             </div>
             
             <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <a href="/auth/forgot-password" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="password" class="block text-sm font-semibold text-gray-700">
+                        <i class="fas fa-lock text-blue-600 mr-2"></i>Password
+                    </label>
+                    <a href="/auth/forgot-password" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Forgot password?</a>
                 </div>
                 <input type="password" 
                        id="password" 
                        name="password" 
                        required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                       placeholder="Enter your password"
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
             </div>
             
             <div class="flex items-center">
@@ -55,32 +74,32 @@
             
             <div>
                 <button type="submit" 
-                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Sign In
+                        class="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-xl shadow-lg text-base font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition transform hover:scale-105">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Sign In
                 </button>
             </div>
         </form>
         
-        <div class="mt-6">
+        <div class="mt-8">
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
+                    <div class="w-full border-t-2 border-gray-200"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                    <span class="px-4 bg-white text-gray-500 font-medium">Or continue with</span>
                 </div>
             </div>
             
-            <div class="mt-6 grid grid-cols-2 gap-3">
+            <div class="mt-6 grid grid-cols-2 gap-4">
                 <div>
-                    <a href="/auth/google" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        <i class="fab fa-google text-red-500"></i>
+                    <a href="/auth/google" class="w-full inline-flex justify-center items-center py-3 px-4 border-2 border-gray-200 rounded-xl shadow-sm bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition transform hover:scale-105">
+                        <i class="fab fa-google text-red-500 text-lg"></i>
                         <span class="ml-2">Google</span>
                     </a>
                 </div>
                 <div>
-                    <a href="/auth/facebook" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        <i class="fab fa-facebook text-blue-600"></i>
+                    <a href="/auth/facebook" class="w-full inline-flex justify-center items-center py-3 px-4 border-2 border-gray-200 rounded-xl shadow-sm bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition transform hover:scale-105">
+                        <i class="fab fa-facebook text-blue-600 text-lg"></i>
                         <span class="ml-2">Facebook</span>
                     </a>
                 </div>
@@ -88,12 +107,14 @@
         </div>
     </div>
     
-    <div class="bg-gray-50 px-6 py-4">
+    <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-8 py-5 border-t-2 border-gray-100">
         <div class="text-sm text-center text-gray-600">
             Don't have an account? 
-            <a href="/auth/register" class="font-medium text-blue-600 hover:text-blue-500">
-                Sign up
+            <a href="/auth/register" class="font-bold text-blue-600 hover:text-blue-700 transition">
+                Sign up now <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
     </div>
 </div>
+</body>
+</html>
