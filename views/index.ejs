@@ -6,17 +6,17 @@
     <div class="absolute top-0 right-0 -mt-4 -mr-4 w-40 h-40 bg-white opacity-5 rounded-full hero-float"></div>
     <div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-white opacity-5 rounded-full hero-float" style="animation-delay: 1s;"></div>
     <div class="absolute top-1/2 right-1/4 w-24 h-24 bg-white opacity-5 rounded-full hero-float" style="animation-delay: 2s;"></div>
-    
+
     <!-- Shimmer Effect -->
     <div class="absolute inset-0 shimmer pointer-events-none"></div>
-    
+
     <div class="relative z-10">
         <div class="flex items-center mb-4 fade-in">
             <i class="fas fa-fish text-white text-5xl mr-4 hero-float"></i>
             <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg">Welcome to FishBook</h1>
         </div>
         <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl fade-in" style="animation-delay: 0.2s;">Connect with fellow anglers, share your catches, and plan your next fishing adventure. Join our thriving community today!</p>
-        
+
         <% if (!locals.currentUser) { %>
             <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <a href="/auth/register" class="inline-flex items-center justify-center bg-white text-blue-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl text-center transition transform hover:scale-105 shadow-xl">
@@ -35,7 +35,7 @@
                     <h3 class="text-xl font-bold text-white mb-2">Log a Catch</h3>
                     <p class="text-blue-100">Share your latest fishing success with the community.</p>
                 </a>
-                
+
                 <a href="/trips/new" class="group bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 rounded-xl p-6 hover:bg-opacity-20 hover:border-opacity-50 transition duration-300 transform hover:scale-105">
                     <div class="text-white text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-calendar-plus"></i>
@@ -43,7 +43,7 @@
                     <h3 class="text-xl font-bold text-white mb-2">Plan a Trip</h3>
                     <p class="text-blue-100">Organize a fishing trip and invite others to join.</p>
                 </a>
-                
+
                 <a href="/explore" class="group bg-white bg-opacity-10 backdrop-blur-sm border-2 border-white border-opacity-30 rounded-xl p-6 hover:bg-opacity-20 hover:border-opacity-50 transition duration-300 transform hover:scale-105">
                     <div class="text-white text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-compass"></i>
@@ -65,7 +65,7 @@
         <h3 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-1"><%= catches ? catches.length : 0 %></h3>
         <p class="text-gray-600 font-semibold text-lg">Recent Catches</p>
     </div>
-    
+
     <div class="stat-card bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-110 transition duration-300 border-2 border-transparent hover:border-green-300">
         <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-teal-500 mb-4 shadow-lg">
             <i class="fas fa-calendar-check text-white text-3xl"></i>
@@ -73,7 +73,7 @@
         <h3 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600 mb-1"><%= trips ? trips.length : 0 %></h3>
         <p class="text-gray-600 font-semibold text-lg">Upcoming Trips</p>
     </div>
-    
+
     <div class="stat-card bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-110 transition duration-300 border-2 border-transparent hover:border-purple-300">
         <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4 shadow-lg">
             <i class="fas fa-users text-white text-3xl"></i>
@@ -99,15 +99,15 @@
             View All <i class="fas fa-arrow-right ml-2"></i>
         </a>
     </div>
-    
+
     <% if (catches && catches.length > 0) { %>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <% catches.forEach(catchItem => { %>
                 <div class="catch-card bg-white border-2 border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
                     <div class="relative h-56 bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-500 overflow-hidden group">
                         <% if (catchItem.image) { %>
-                            <img src="/<%= catchItem.image %>" 
-                                 alt="<%= catchItem.species %>" 
+                            <img src="/<%= catchItem.image %>"
+                                 alt="<%= catchItem.species %>"
                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         <% } else { %>
                             <div class="flex items-center justify-center h-full">
@@ -134,8 +134,8 @@
                         </div>
                         <div class="mt-4 flex items-center justify-between text-sm text-gray-500 pt-4 border-t-2 border-gray-100">
                             <div class="flex items-center">
-                                <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
-                                     alt="<%= catchItem.user.username %>" 
+                                <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>"
+                                     alt="<%= catchItem.user.username %>"
                                      class="w-8 h-8 rounded-full mr-2 border-2 border-blue-200 shadow-sm">
                                 <span class="font-semibold text-gray-700"><%= catchItem.user.username %></span>
                             </div>
@@ -186,7 +186,7 @@
             View All <i class="fas fa-arrow-right ml-2"></i>
         </a>
     </div>
-    
+
     <% if (trips && trips.length > 0) { %>
         <div class="space-y-5">
             <% trips.forEach(trip => { %>
@@ -211,7 +211,7 @@
                                         <i class="far fa-calendar-alt text-blue-500"></i>
                                     </div>
                                     <span class="font-medium">
-                                        <%= new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> - 
+                                        <%= new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> -
                                         <%= new Date(trip.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
                                     </span>
                                 </div>
@@ -219,9 +219,9 @@
                         </div>
                         <div class="flex flex-col sm:items-end">
                             <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold shadow-sm mb-3
-                                <%= trip.status === 'upcoming' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' : 
-                                   trip.status === 'in_progress' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white' : 
-                                   trip.status === 'completed' ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white' : 
+                                <%= trip.status === 'upcoming' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' :
+                                   trip.status === 'in_progress' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white' :
+                                   trip.status === 'completed' ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white' :
                                    'bg-gradient-to-r from-red-500 to-pink-500 text-white' %>">
                                 <i class="fas fa-circle text-xs mr-2"></i>
                                 <%= trip.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
@@ -233,8 +233,8 @@
                             <span class="text-sm font-semibold text-gray-600 mr-3">Participants:</span>
                             <div class="flex -space-x-3">
                                 <% trip.participants.slice(0, 5).forEach(participant => { %>
-                                    <img src="<%= participant.user.profilePicture || '/images/default-avatar.png' %>" 
-                                         alt="<%= participant.user.username %>" 
+                                    <img src="<%= participant.user.profilePicture || '/images/default-avatar.png' %>"
+                                         alt="<%= participant.user.username %>"
                                          class="w-10 h-10 rounded-full border-3 border-white shadow-md hover:scale-110 transition-transform duration-200"
                                          title="<%= participant.user.username %>">
                                 <% }); %>

@@ -19,6 +19,7 @@ import fishingSpotsRouter from './routes/fishingSpots.js';
 import exploreRouter from './routes/explore.js';
 import draftRouter from './routes/drafts.js';
 import adminRouter from './routes/admins.js';
+import messagesRouter from './routes/messageRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -50,7 +51,8 @@ const uploadDirs = [
     path.join(__dirname, 'public', 'uploads'),
     path.join(__dirname, 'public', 'uploads', 'catches'),
     path.join(__dirname, 'public', 'uploads', 'profile-pictures'),
-    path.join(__dirname, 'public', 'uploads', 'trips')
+    path.join(__dirname, 'public', 'uploads', 'trips'),
+    path.join(__dirname, 'public', 'uploads', 'messages') //MAYBE MAYBE
 ];
 
 uploadDirs.forEach(dir => {
@@ -101,6 +103,7 @@ app.use('/fishing-spots', fishingSpotsRouter);
 app.use('/explore', exploreRouter); // Explicitly mount at /explore
 app.use('/drafts', draftRouter);
 app.use('/admin', adminRouter);
+app.use('/messages', messagesRouter);
 
 // Debug route to list all registered routes
 app.get('/debug-routes', (req, res) => {
