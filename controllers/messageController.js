@@ -12,7 +12,7 @@ export const getInbox = async (req, res) => {
         const messages = await Message.find({
             $or: [{ sender: userId }, { receiver: userId }]
         })
-            .populate('sender receiver', 'username profilePicture')
+            .populate('sender receiver', '_id username profilePicture')
             .sort({ createdAt: -1 });
 
         // Group by conversation partner and get latest message
@@ -37,7 +37,10 @@ export const getInbox = async (req, res) => {
         const conversations = Array.from(conversationsMap.values())
             .sort((a, b) => b.lastMessageTime - a.lastMessageTime);
 
-        res.render('message/inbox', { conversations });
+        res.render('messages/inbox', {
+            title: "Inbox",
+            conversations
+        });
     } catch (error) {
         console.error('Error getting inbox:', error);
         res.status(500).render('error', {
