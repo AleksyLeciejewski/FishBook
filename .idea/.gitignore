@@ -1,5 +1,6 @@
 # Default ignored files
 /shelf/
+
 .env
 # MongoDB Connection
 MONGODB_URI=mongodb+srv://dmastek:dmastekAtlas@dheisatlas.z5myaju.mongodb.net/?appName=DheisAtlas
@@ -23,6 +24,7 @@ NODE_ENV=development
 JWT_SECRET=Vq9d7Kb4sP2mXy8TnL6fR0gH1uC3zW5aS8pQ2vY7eN4cB6tM9jR1kF3hG8lZ0xPq
 SESSION_SECRET=Rb8Xy3Mn6Kp1Zs9Qv4Gt2Jw7Dh5La0Fc8Sz3Vb6Nq1Pr9Yk4Tm7Wx2Ug5Hz0Cc1L
 JWT_EXPIRES_IN=1h
+
 
 /workspace.xml
 # Editor-based HTTP Client requests

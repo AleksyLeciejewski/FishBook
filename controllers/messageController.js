@@ -96,6 +96,7 @@ export const getConversation = async (req, res) => {
             .sort({ createdAt: 1 });
 
         res.render('messages/conversation', {
+            title: `${otherUser.username} - Conversation`,
             messages,
             otherUser,
             currentUserId: userId
