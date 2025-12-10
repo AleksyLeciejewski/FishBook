@@ -56,6 +56,18 @@ router.get('/logout', (req, res) => {
     });
 });
 
+// POST /auth/logout - for form submissions
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.redirect('/');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/auth/login');
+    });
+});
+
 
 
 // Protected user endpoints

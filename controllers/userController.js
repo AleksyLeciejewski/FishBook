@@ -16,6 +16,75 @@ import fs from 'fs-extra';
 // Create uploads directory if it doesn't exist
 fs.ensureDirSync(uploadDir);
 
+// @desc    Render user profile page
+// @route   GET /users/:id
+// @access  Public
+export const renderUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+            .select('-password -resetPasswordToken -resetPasswordExpire')
+            .populate('followers.user', 'username profilePicture')
+            .populate('following.user', 'username profilePicture');
+
+        if (!user) {
+            return res.status(404).render('404', {
+                title: 'User Not Found'
+            });
+        }
+
+        // Get user's catches with stats
+        const catches = await Catch.find({ user: req.params.id, isPublic: true })
+            .sort({ dateCaught: -1 })
+            .limit(6)
+            .populate('user', 'username profilePicture');
+
+        // Calculate fishing stats
+        const allCatches = await Catch.find({ user: req.params.id, isPublic: true });
+        const totalCatches = allCatches.length;
+        const totalWeight = allCatches.reduce((sum, c) => sum + (c.weight || 0), 0);
+        const biggestCatch = allCatches.length > 0 
+            ? allCatches.reduce((max, c) => c.weight > max.weight ? c : max, allCatches[0])
+            : null;
+        
+        // Species diversity
+        const speciesSet = new Set(allCatches.map(c => c.species));
+        const speciesCount = speciesSet.size;
+
+        // Get user's trips
+        const trips = await Trip.find({
+            $or: [
+                { createdBy: req.params.id, isPublic: true },
+                { 'participants.user': req.params.id }
+            ]
+        })
+            .sort({ startDate: -1 })
+            .limit(4)
+            .populate('createdBy', 'username profilePicture');
+
+        res.render('users/profile', {
+            title: `${user.username}'s Profile`,
+            profileUser: user,
+            catches,
+            trips,
+            stats: {
+                totalCatches,
+                totalWeight: totalWeight.toFixed(2),
+                biggestCatch,
+                speciesCount,
+                followers: user.followers.length,
+                following: user.following.length
+            }
+        });
+    } catch (error) {
+        console.error('Render user profile error:', error);
+        res.status(500).render('error', {
+            title: 'Error',
+            error: 'Error loading profile',
+            message: error.message
+        });
+    }
+};
+
 // @desc    Get user profile
 // @route   GET /api/users/:id
 // @access  Public
@@ -364,6 +433,7 @@ export const deleteAccount = async (req, res) => {
 };
 
 export default {
+    renderUserProfile,
     getUserProfile,
     updateProfile,
     getUserCatches,
