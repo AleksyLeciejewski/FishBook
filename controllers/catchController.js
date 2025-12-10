@@ -74,7 +74,7 @@ export const renderCatchesIndex = async (req, res) => {
 
 export const renderNewCatchForm = async (req, res) => {
     try {
-        let catchItem = null;
+        let catchItem = undefined;
         let draftId = '';
         const draftIdQuery = req.query.draftId;
 
