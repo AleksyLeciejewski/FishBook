@@ -143,6 +143,96 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .list-item {
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            background: #f9f9f9;
+        }
+
+        .list-item strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .small-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .list-item div:last-child {
+            color: #555;
+            line-height: 1.5;
+        }
+
         @media (max-width: 768px) {
             .admin-controls {
                 width: 100%;
@@ -163,6 +253,14 @@
 
             .btn-small {
                 padding: 0.4rem 0.6rem;
+            }
+
+            .modal-content {
+                max-height: 90vh;
+            }
+
+            .modal-header h2 {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -254,6 +352,11 @@
                             <span class="date-text"><%= new Date(user.createdAt).toLocaleDateString() %></span>
                         </td>
                         <td class="action-cell">
+                            <button class="btn-small btn-secondary"
+                                    onclick="fetchUserCatches('<%= user._id %>', '<%= user.username %>')"
+                                    title="View user's catches">
+                                <span class="btn-icon">🎣</span> View Catches
+                            </button>
                             <button class="btn-small btn-primary"
                                     onclick="toggleRole('<%= user._id %>', '<%= user.role %>')"
                                     title="Change role">
@@ -291,6 +394,19 @@
 <!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay" style="display: none;">
     <div class="spinner"></div>
+</div>
+
+<!-- Modal for Viewing Catches -->
+<div id="modalOverlay" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 id="modalTitle">Modal Title</h2>
+            <button class="modal-close" onclick="closeModal()" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            Modal content goes here
+        </div>
+    </div>
 </div>
 
 <script>
@@ -341,6 +457,97 @@
 
     function hideLoading() {
         document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // Modal Functions
+    function openModal(title, bodyHTML) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = bodyHTML;
+        document.getElementById('modalOverlay').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function closeModalOnOverlay(event) {
+        if (event.target.id === 'modalOverlay') {
+            closeModal();
+        }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // HTML Escape Utility
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Fetch User Catches Function
+    async function fetchUserCatches(userId, username) {
+        openModal(`Catches by ${username}`, '<p>Loading catches...</p>');
+        try {
+            const res = await fetch(`/admin/users/${userId}/catches`);
+            const json = await res.json();
+            if (!res.ok) {
+                openModal('Error', `<p>${json?.message || 'Failed to fetch catches'}</p>`);
+                return;
+            }
+            const catches = json.catches || [];
+            if (catches.length === 0) {
+                openModal(`Catches by ${username}`, '<p>No catches found</p>');
+                return;
+            }
+            const html = catches.map(c => {
+                const created = c.date ? new Date(c.date).toLocaleString() : (c.createdAt ? new Date(c.createdAt).toLocaleString() : '—');
+                const species = c.species || '(unknown)';
+                const weight = c.weight ? `${c.weight} ${c.weightUnit || 'kg'}` : '';
+                const location = c.location || c.spot || '—';
+                const notes = (c.notes || c.description || '').substring(0, 500);
+                // dummy Edit/Delete buttons added below
+                return `<div class="list-item" data-catch-id="${escapeHtml(c._id || '')}">
+                        <strong>${escapeHtml(species)} ${escapeHtml(weight)}</strong>
+                        <div class="small-meta">Date: ${escapeHtml(created)} — Location: ${escapeHtml(location)}</div>
+                        <div>${escapeHtml(notes)}</div>
+                        <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+                            <button class="btn-small btn-secondary" onclick="editCatch('${escapeHtml(c._id || '')}')" title="Edit catch">✏️ Edit</button>
+                            <button class="btn-small btn-danger" onclick="deleteCatch('${escapeHtml(c._id || '')}')" title="Delete catch">🗑️ Delete</button>
+                        </div>
+                    </div>`;
+            }).join('');
+            openModal(`Catches by ${username}`, html);
+        } catch (err) {
+            console.error(err);
+            openModal('Error', '<p>Network error while fetching catches</p>');
+        }
+    }
+
+    // Dummy handlers to make the buttons do something visible (non-functional)
+    function editCatch(catchId) {
+        // show a simple edit modal (dummy)
+        openModal('Edit Catch', `<p>Dummy edit UI for catch <strong>${escapeHtml(catchId)}</strong></p>
+                             <p>This is a placeholder — editing not implemented.</p>
+                             <div style="margin-top:1rem;">
+                                <button class="btn-small btn-primary" onclick="showToast('Save pressed (dummy)', 'success')">Save (dummy)</button>
+                                <button class="btn-small btn-secondary" onclick="closeModal()">Close</button>
+                             </div>`);
+    }
+
+    function deleteCatch(catchId) {
+        if (!confirm('Delete this catch? This is a dummy action and will not remove anything.')) return;
+        // pretend we deleted it
+        showToast(`Catch ${catchId} deleted (dummy)`, 'success');
+        // Optionally close modal or remove DOM node
+        closeModal();
     }
 
     // Enhanced Toggle Role Function
