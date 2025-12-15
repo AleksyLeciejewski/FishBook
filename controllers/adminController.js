@@ -97,3 +97,44 @@ export const getStatistics = async (req, res) => {
         recentUsers
     });
 };
+
+export async function getUserCatches(req, res) {
+    try {
+        const userId = req.params.id;
+        const catches = await Catch.find({
+            $or: [
+                { user: userId },
+                { owner: userId },
+                { creator: userId },
+                { catcher: userId }
+            ]
+        })
+            .select('-__v')
+            .sort({ createdAt: -1 });
+
+        return res.json({ success: true, catches });
+    } catch (error) {
+        console.error('Get user catches error:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
+
+export async function getUserTrips(req, res) {
+    try {
+        const userId = req.params.id;
+        const trips = await Trip.find({
+            $or: [
+                { user: userId },
+                { owner: userId },
+                { creator: userId }
+            ]
+        })
+            .select('-__v')
+            .sort({ startDate: -1, createdAt: -1 });
+
+        return res.json({ success: true, trips });
+    } catch (error) {
+        console.error('Get user trips error:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
