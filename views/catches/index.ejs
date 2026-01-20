@@ -90,10 +90,10 @@
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div>
                     <h1 class="text-4xl font-bold mb-2">Community Catches</h1>
-                    <p class="text-blue-100 text-lg">Discover amazing catches from anglers around the world</p>
+                    <p class="text-gray-300 text-lg">Discover amazing catches from anglers around the world</p>
                 </div>
                 <% if (locals.currentUser) { %>
-                    <a href="/catches/new" class="mt-4 md:mt-0 bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold flex items-center shadow-lg transition transform hover:scale-105">
+                    <a href="/catches/new" class="mt-4 md:mt-0 bg-yellow-400 text-black hover:bg-yellow-300 px-6 py-3 rounded-lg font-semibold flex items-center shadow-lg transition transform hover:scale-105">
                         <i class="fas fa-plus mr-2"></i> Log a Catch
                     </a>
                 <% } %>
@@ -105,29 +105,29 @@
     <main class="container mx-auto px-4 py-8">
         <% if (locals.currentUser && drafts && drafts.length > 0) { %>
             <section class="container mx-auto px-4 py-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Drafts</h2>
+                <h2 class="text-xl font-semibold text-white mb-4">Your Drafts</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <% drafts.forEach(draft => { %>
-                        <div id="draft-<%= draft._id %>" class="bg-gray-50 rounded-xl p-4 border border-gray-200 opacity-80">
+                        <div id="draft-<%= draft._id %>" class="bg-gray-800 rounded-xl p-4 border border-gray-700 opacity-80">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm font-medium text-gray-600">Draft</span>
-                                <span class="text-xs text-gray-500"><%= new Date(draft.updatedAt).toLocaleString() %></span>
+                                <span class="text-sm font-medium text-gray-300">Draft</span>
+                                <span class="text-xs text-gray-400"><%= new Date(draft.updatedAt).toLocaleString() %></span>
                             </div>
 
-                            <div class="text-gray-700 mb-3 text-sm h-20 overflow-hidden">
+                            <div class="text-gray-300 mb-3 text-sm h-20 overflow-hidden">
                                 <% if (draft.data && (draft.data.species || draft.data.locationName)) { %>
                                     <div class="mb-1"><strong><%= draft.data.species || '—' %></strong></div>
-                                    <div class="text-xs text-gray-500"><%= draft.data.locationName || 'No location' %></div>
+                                    <div class="text-xs text-gray-400"><%= draft.data.locationName || 'No location' %></div>
                                 <% } else { %>
-                                    <em class="text-gray-500">Empty draft</em>
+                                    <em class="text-gray-400">Empty draft</em>
                                 <% } %>
                             </div>
 
                             <div class="flex space-x-2">
-                                <a href="/catches/new?draftId=<%= draft._id %>" class="flex-1 text-center bg-white border border-gray-300 text-gray-800 px-3 py-2 rounded hover:bg-gray-100">
+                                <a href="/catches/new?draftId=<%= draft._id %>" class="flex-1 text-center bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded hover:bg-gray-600">
                                     Resume
                                 </a>
-                                <button data-id="<%= draft._id %>" class="delete-draft-btn bg-red-50 text-red-600 px-3 py-2 rounded border border-red-100 hover:bg-red-100">
+                                <button data-id="<%= draft._id %>" class="delete-draft-btn bg-red-900 text-red-300 px-3 py-2 rounded border border-red-800 hover:bg-red-800">
                                     Delete
                                 </button>
                             </div>
@@ -166,30 +166,30 @@
             </script>
         <% } %>
         <!-- Search and Filter Section -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div class="bg-gray-900 rounded-xl shadow-md p-6 mb-8 border border-gray-700">
             <form action="/catches" method="GET" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Search -->
                     <div class="md:col-span-2">
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="search" class="block text-sm font-medium text-gray-300 mb-2">
                             <i class="fas fa-search mr-1"></i> Search
                         </label>
                         <input type="text" 
                                name="search" 
                                id="search" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" 
+                               class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition" 
                                placeholder="Search by species, location..."
                                value="<%= search %>">
                     </div>
                     
                     <!-- Species Filter -->
                     <div>
-                        <label for="species" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="species" class="block text-sm font-medium text-gray-300 mb-2">
                             <i class="fas fa-fish mr-1"></i> Species
                         </label>
                         <select id="species" 
                                 name="species" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition">
                             <option value="">All Species</option>
                             <option value="bass" <%= species === 'bass' ? 'selected' : '' %>>Bass</option>
                             <option value="trout" <%= species === 'trout' ? 'selected' : '' %>>Trout</option>
@@ -212,26 +212,26 @@
                 <!-- Weight Range -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="minWeight" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="minWeight" class="block text-sm font-medium text-gray-300 mb-2">
                             <i class="fas fa-weight-hanging mr-1"></i> Min Weight (kg)
                         </label>
                         <input type="number" 
                                name="minWeight" 
                                id="minWeight" 
                                step="0.1"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" 
+                               class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition" 
                                placeholder="0.0"
                                value="<%= minWeight %>">
                     </div>
                     <div>
-                        <label for="maxWeight" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="maxWeight" class="block text-sm font-medium text-gray-300 mb-2">
                             <i class="fas fa-weight-hanging mr-1"></i> Max Weight (kg)
                         </label>
                         <input type="number" 
                                name="maxWeight" 
                                id="maxWeight" 
                                step="0.1"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" 
+                               class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition" 
                                placeholder="100.0"
                                value="<%= maxWeight %>">
                     </div>
@@ -240,9 +240,9 @@
             
             <!-- Active Filters Display -->
             <% if (species || minWeight || maxWeight || search) { %>
-                <div class="mt-4 pt-4 border-t border-gray-200">
+                <div class="mt-4 pt-4 border-t border-gray-700">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-sm font-medium text-gray-700">Active Filters:</span>
+                        <span class="text-sm font-medium text-gray-300">Active Filters:</span>
                         <% if (species) { %>
                             <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-400 bg-opacity-20 text-yellow-400 border border-yellow-400">
                                 <i class="fas fa-fish mr-1"></i> <%= species %>
@@ -250,21 +250,21 @@
                             </span>
                         <% } %>
                         <% if (minWeight) { %>
-                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900 bg-opacity-50 text-green-300 border border-green-700">
                                 Min: <%= minWeight %>kg
                             </span>
                         <% } %>
                         <% if (maxWeight) { %>
-                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900 bg-opacity-50 text-green-300 border border-green-700">
                                 Max: <%= maxWeight %>kg
                             </span>
                         <% } %>
                         <% if (search) { %>
-                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                            <span class="filter-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900 bg-opacity-50 text-purple-300 border border-purple-700">
                                 <i class="fas fa-search mr-1"></i> "<%= search %>"
                             </span>
                         <% } %>
-                        <a href="/catches" class="text-sm text-red-600 hover:text-red-800 font-medium ml-2">
+                        <a href="/catches" class="text-sm text-red-400 hover:text-red-300 font-medium ml-2">
                             <i class="fas fa-times-circle mr-1"></i> Clear All
                         </a>
                     </div>
@@ -346,17 +346,17 @@
                             <% } %>
                             
                             <!-- Footer -->
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-700">
                                 <!-- User Info -->
                                 <div class="flex items-center space-x-2">
                                     <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
                                          alt="<%= catchItem.user.username %>" 
-                                         class="w-8 h-8 rounded-full border-2 border-gray-200">
+                                         class="w-8 h-8 rounded-full border-2 border-yellow-400">
                                     <div class="text-xs">
-                                        <a href="/users/<%= catchItem.user._id %>" class="font-medium text-gray-900 hover:text-blue-600 block">
+                                        <a href="/users/<%= catchItem.user._id %>" class="font-medium text-white hover:text-yellow-400 block">
                                             <%= catchItem.user.username %>
                                         </a>
-                                        <time class="text-gray-500" datetime="<%= new Date(catchItem.dateCaught).toISOString() %>">
+                                        <time class="text-gray-400" datetime="<%= new Date(catchItem.dateCaught).toISOString() %>">
                                             <%= new Date(catchItem.dateCaught).toLocaleDateString('en-US', { 
                                                 month: 'short', 
                                                 day: 'numeric' 
@@ -368,19 +368,19 @@
                                 <!-- Actions -->
                                 <div class="flex items-center space-x-3 text-sm">
                                     <% if (currentUser) { %>
-                                        <button class="like-btn flex items-center <%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'text-red-500' : 'text-gray-500' %> hover:text-red-500 transition"
+                                        <button class="like-btn flex items-center <%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'text-red-500' : 'text-gray-400' %> hover:text-red-500 transition"
                                                 data-catch-id="<%= catchItem._id %>"
                                                 data-liked="<%= catchItem.likes.some(like => String(like) === String(currentUser._id)) %>">
                                             <i class="<%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'fas' : 'far' %> fa-heart mr-1"></i>
                                             <span class="like-count"><%= catchItem.likes.length %></span>
                                         </button>
                                     <% } else { %>
-                                        <a href="/auth/login" class="flex items-center text-gray-500 hover:text-red-500 transition">
+                                        <a href="/auth/login" class="flex items-center text-gray-400 hover:text-red-500 transition">
                                             <i class="far fa-heart mr-1"></i>
                                             <span><%= catchItem.likes.length %></span>
                                         </a>
                                     <% } %>
-                                    <a href="/catches/<%= catchItem._id %>" class="flex items-center text-gray-500 hover:text-blue-600 transition">
+                                    <a href="/catches/<%= catchItem._id %>" class="flex items-center text-gray-400 hover:text-yellow-400 transition">
                                         <i class="far fa-comment mr-1"></i>
                                         <span><%= catchItem.comments ? catchItem.comments.length : 0 %></span>
                                     </a>
@@ -402,7 +402,7 @@
                     <nav class="relative z-0 inline-flex rounded-lg shadow-md overflow-hidden" aria-label="Pagination">
                         <% if (currentPage > 1) { %>
                             <a href="?page=<%= currentPage - 1 %><%= queryString ? '&' + queryString : '' %>" 
-                               class="relative inline-flex items-center px-4 py-2 bg-white border-r border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 transition">
+                               class="relative inline-flex items-center px-4 py-2 bg-gray-800 border-r border-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-700 transition">
                                 <i class="fas fa-chevron-left mr-2"></i> Previous
                             </a>
                         <% } %>
@@ -414,7 +414,7 @@
                                 </span>
                             <% } else { %>
                                 <a href="?page=<%= i %><%= queryString ? '&' + queryString : '' %>" 
-                                   class="relative inline-flex items-center px-4 py-2 bg-white border-r border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 transition">
+                                   class="relative inline-flex items-center px-4 py-2 bg-gray-800 border-r border-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-700 transition">
                                     <%= i %>
                                 </a>
                             <% } %>
@@ -422,7 +422,7 @@
                         
                         <% if (currentPage < totalPages) { %>
                             <a href="?page=<%= currentPage + 1 %><%= queryString ? '&' + queryString : '' %>" 
-                               class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-blue-50 transition">
+                               class="relative inline-flex items-center px-4 py-2 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 transition">
                                 Next <i class="fas fa-chevron-right ml-2"></i>
                             </a>
                         <% } %>
@@ -437,7 +437,7 @@
                     <i class="fas fa-fish text-4xl text-yellow-400"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-2">No Catches Found</h3>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                <p class="text-gray-400 mb-8 max-w-md mx-auto">
                     <% if (species || minWeight || maxWeight || search) { %>
                         No catches match your current filters. Try adjusting your search criteria.
                     <% } else { %>
@@ -454,11 +454,11 @@
     </main>
     
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
+    <footer class="bg-black border-t border-gray-800 mt-12">
         <div class="container mx-auto px-4 py-8">
-            <div class="text-center text-gray-600">
+            <div class="text-center text-gray-400">
                 <p class="text-sm">
-                    &copy; <%= new Date().getFullYear() %> FishBook. Made with <i class="fas fa-heart text-red-500"></i> by anglers, for anglers.
+                    &copy; <%= new Date().getFullYear() %> FishHub. Made with <i class="fas fa-heart text-yellow-400"></i> by anglers, for anglers.
                 </p>
             </div>
         </div>
@@ -491,13 +491,13 @@
                         
                         if (isLiked) {
                             this.classList.remove('text-red-500');
-                            this.classList.add('text-gray-500');
+                            this.classList.add('text-gray-400');
                             icon.classList.remove('fas');
                             icon.classList.add('far');
                             this.dataset.liked = 'false';
                         } else {
                             this.classList.add('text-red-500');
-                            this.classList.remove('text-gray-500');
+                            this.classList.remove('text-gray-400');
                             icon.classList.remove('far');
                             icon.classList.add('fas');
                             this.dataset.liked = 'true';

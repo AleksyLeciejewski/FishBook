@@ -1,0 +1,12 @@
+/** @type {import('jest').Config} */
+const config = {
+  testEnvironment: 'node',
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
+  moduleFileExtensions: ['js', 'mjs'],
+  testMatch: ['**/tests/**/*.test.js'],
+  transformIgnorePatterns: [],
+};
+
+export default config;

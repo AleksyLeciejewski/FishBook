@@ -1,26 +1,26 @@
-<%- include('../partials/header', { title: 'Find Fishing Spots - FishBook' }) %>
+<%- include('../partials/header', { title: 'Find Fishing Spots - FishHub' }) %>
 
 <div class="container mt-4">
-    <h1 class="mb-4">Find Fishing Spots</h1>
+    <h1 class="mb-4 text-white">Find Fishing Spots</h1>
     
     <!-- Search Form -->
-    <div class="card mb-4">
-        <div class="card-body">
+    <div class="bg-gray-900 rounded-xl shadow-md p-6 mb-4 border border-gray-700">
+        <div>
             <form action="/fishing-spots" method="GET" class="row g-3">
                 <div class="col-md-6">
                     <div class="input-group">
                         <input type="text" 
-                               class="form-control" 
+                               class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400" 
                                name="q" 
                                placeholder="Search by name or description..." 
                                value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
-                        <button class="btn btn-primary" type="submit">
+                        <button class="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 rounded-lg font-medium ml-2" type="submit">
                             <i class="fas fa-search"></i> Search
                         </button>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <select name="type" class="form-select">
+                    <select name="type" class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400">
                         <option value="">All Types</option>
                         <option value="gratis" <%= typeof selectedType !== 'undefined' && selectedType === 'gratis' ? 'selected' : '' %>>Free</option>
                         <option value="betalings" <%= typeof selectedType !== 'undefined' && selectedType === 'betalings' ? 'selected' : '' %>>Paid</option>
@@ -28,7 +28,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <a href="/fishing-spots" class="btn btn-outline-secondary w-100">Reset</a>
+                    <a href="/fishing-spots" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 w-100 text-center block">Reset</a>
                 </div>
             </form>
         </div>
@@ -36,30 +36,30 @@
 
     <!-- Results -->
     <% if (typeof spots !== 'undefined' && spots.length > 0) { %>
-        <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <% spots.forEach(spot => { %>
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= spot.name %></h5>
-                            <h6 class="card-subtitle mb-2 text-muted">
+                <div>
+                    <div class="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-700 h-full">
+                        <div>
+                            <h5 class="text-xl font-bold text-white mb-2"><%= spot.name %></h5>
+                            <div class="mb-3">
                                 <% if (spot.type === 'gratis') { %>
-                                    <span class="badge bg-success">Free</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900 bg-opacity-50 text-green-300 border border-green-700">Free</span>
                                 <% } else if (spot.type === 'betalings') { %>
-                                    <span class="badge bg-warning text-dark">Paid</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-900 bg-opacity-50 text-yellow-300 border border-yellow-700">Paid</span>
                                 <% } else { %>
-                                    <span class="badge bg-secondary">Private</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-800 text-gray-300 border border-gray-600">Private</span>
                                 <% } %>
-                            </h6>
+                            </div>
                             <% if (spot.description) { %>
-                                <p class="card-text"><%= spot.description %></p>
+                                <p class="text-gray-300 mb-4"><%= spot.description %></p>
                             <% } %>
                             <% if (spot.location && spot.location.lat && spot.location.lng) { %>
-                                <div class="mt-2">
+                                <div class="mt-4">
                                     <a href="https://www.google.com/maps?q=<%= spot.location.lat %>,<%= spot.location.lng %>" 
                                        target="_blank" 
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-map-marker-alt"></i> View on Map
+                                       class="inline-flex items-center px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-black rounded-lg font-medium transition">
+                                        <i class="fas fa-map-marker-alt mr-2"></i> View on Map
                                     </a>
                                 </div>
                             <% } %>
@@ -69,8 +69,9 @@
             <% }); %>
         </div>
     <% } else if (typeof spots !== 'undefined' && spots.length === 0) { %>
-        <div class="alert alert-info">
-            No fishing spots found. Try adjusting your search criteria.
+        <div class="bg-gray-900 border border-gray-700 rounded-xl p-8 text-center">
+            <i class="fas fa-fish text-4xl text-yellow-400 mb-4"></i>
+            <p class="text-gray-300">No fishing spots found. Try adjusting your search criteria.</p>
         </div>
     <% } %>
 </div>

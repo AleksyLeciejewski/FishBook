@@ -25,43 +25,43 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-black min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
+    <nav class="bg-black text-white shadow-lg border-b border-yellow-400">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold flex items-center">
-                <i class="fas fa-fish mr-2"></i>FishBook
+            <a href="/" class="flex items-center">
+                <img src="/images/fishhub-logo.png" alt="FishHub" class="h-10">
             </a>
             <div class="flex items-center space-x-4">
                 <% if (locals.currentUser) { %>
-                    <a href="/catches" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">My Catches</a>
-                    <a href="/trips" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">Trips</a>
-                    <a href="/fishing-spots" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">Find Spots</a>
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 focus:outline-none hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">
+                    <a href="/catches" class="hover:bg-gray-800 px-3 py-2 rounded transition text-white">My Catches</a>
+                    <a href="/trips" class="hover:bg-gray-800 px-3 py-2 rounded transition text-white">Trips</a>
+                    <a href="/fishing-spots" class="hover:bg-gray-800 px-3 py-2 rounded transition text-white">Find Spots</a>
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none hover:bg-gray-800 px-3 py-2 rounded transition">
                             <img src="<%= currentUser.profilePicture || '/images/default-avatar.png' %>" 
                                  alt="Profile" 
-                                 class="w-8 h-8 rounded-full border-2 border-white">
-                            <a href="/users/<%= currentUser._id %>" class="hover:underline"><%= currentUser.username %></a>
+                                 class="w-8 h-8 rounded-full border-2 border-yellow-400">
+                            <span><%= currentUser.username %></span>
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
-                        <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-10">
-                            <a href="/users/<%= currentUser._id %>" class="block px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
-                                <i class="fas fa-user mr-2 text-blue-600"></i>Profile
+                        <div id="userMenuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-gray-900 rounded-lg shadow-xl py-2 z-10 border border-gray-700">
+                            <a href="/users/<%= currentUser._id %>" class="block px-4 py-2 text-white hover:bg-gray-800 transition">
+                                <i class="fas fa-user mr-2 text-yellow-400"></i>My Profile
                             </a>
-                            <a href="/settings" class="block px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
-                                <i class="fas fa-cog mr-2 text-blue-600"></i>Settings
+                            <a href="/settings" class="block px-4 py-2 text-white hover:bg-gray-800 transition">
+                                <i class="fas fa-cog mr-2 text-yellow-400"></i>Settings
                             </a>
-                            <form action="/auth/logout" method="POST" class="border-t border-gray-200 mt-1 pt-1">
-                                <button type="submit" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-red-50 transition">
-                                    <i class="fas fa-sign-out-alt mr-2 text-red-600"></i>Logout
+                            <form action="/auth/logout" method="POST" class="border-t border-gray-700 mt-1 pt-1">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-white hover:bg-gray-800 transition">
+                                    <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>Logout
                                 </button>
                             </form>
                         </div>
                     </div>
                 <% } else { %>
-                    <a href="/auth/register" class="hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded transition">Register</a>
-                    <a href="/auth/login" class="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition shadow-md">Login</a>
+                    <a href="/auth/register" class="hover:bg-gray-800 px-3 py-2 rounded transition text-white">Register</a>
+                    <a href="/auth/login" class="bg-yellow-400 text-black hover:bg-yellow-300 px-4 py-2 rounded font-bold transition">Login</a>
                 <% } %>
             </div>
         </div>
@@ -71,7 +71,7 @@
     <main class="container mx-auto px-4 py-8">
         <!-- Back Button -->
         <div class="mb-6">
-            <a href="/catches" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition">
+            <a href="/catches" class="inline-flex items-center text-yellow-400 hover:text-yellow-300 font-medium transition">
                 <i class="fas fa-arrow-left mr-2"></i> Back to All Catches
             </a>
         </div>
@@ -80,7 +80,7 @@
             <!-- Main Content -->
             <div class="lg:col-span-2">
                 <!-- Catch Card -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gray-900 rounded-xl shadow-lg overflow-hidden border border-gray-700">
                     <!-- Image -->
                     <div class="relative h-96 bg-gradient-to-br from-blue-400 to-indigo-500">
                         <% if (catchItem.image) { %>
@@ -108,12 +108,12 @@
                             <div class="flex items-center space-x-3">
                                 <img src="<%= catchItem.user.profilePicture || '/images/default-avatar.png' %>" 
                                      alt="<%= catchItem.user.username %>" 
-                                     class="w-12 h-12 rounded-full border-2 border-gray-200">
+                                     class="w-12 h-12 rounded-full border-2 border-yellow-400">
                                 <div>
-                                    <a href="/users/<%= catchItem.user._id %>" class="font-bold text-gray-900 hover:text-blue-600 block">
+                                    <a href="/users/<%= catchItem.user._id %>" class="font-bold text-white hover:text-yellow-400 block">
                                         <%= catchItem.user.username %>
                                     </a>
-                                    <time class="text-sm text-gray-500" datetime="<%= new Date(catchItem.dateCaught).toISOString() %>">
+                                    <time class="text-sm text-gray-400" datetime="<%= new Date(catchItem.dateCaught).toISOString() %>">
                                         <%= new Date(catchItem.dateCaught).toLocaleDateString('en-US', { 
                                             year: 'numeric',
                                             month: 'long', 
@@ -126,13 +126,13 @@
                             <!-- Like Button -->
                             <% if (locals.currentUser) { %>
                                 <button id="likeButton" 
-                                        class="like-button flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition transform hover:scale-105 <%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'liked bg-red-50 text-red-500' : 'bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-500' %>"
+                                        class="like-button flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition transform hover:scale-105 <%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'liked bg-red-900 bg-opacity-50 text-red-400 border border-red-700' : 'bg-gray-800 text-gray-300 hover:bg-red-900 hover:bg-opacity-50 hover:text-red-400 border border-gray-700' %>"
                                         data-catch-id="<%= catchItem._id %>">
                                     <i class="<%= catchItem.likes.some(like => String(like) === String(currentUser._id)) ? 'fas' : 'far' %> fa-heart text-xl"></i>
                                     <span id="likeCount"><%= catchItem.likes.length %></span>
                                 </button>
                             <% } else { %>
-                                <div class="flex items-center space-x-2 px-6 py-3 bg-gray-100 rounded-lg text-gray-600">
+                                <div class="flex items-center space-x-2 px-6 py-3 bg-gray-800 rounded-lg text-gray-400 border border-gray-700">
                                     <i class="far fa-heart text-xl"></i>
                                     <span><%= catchItem.likes.length %></span>
                                 </div>
@@ -141,44 +141,44 @@
 
                         <!-- Stats Grid -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                            <div class="bg-blue-50 rounded-lg p-4 text-center">
-                                <i class="fas fa-weight-hanging text-2xl text-blue-600 mb-2"></i>
-                                <div class="text-2xl font-bold text-gray-900"><%= catchItem.weight %> kg</div>
-                                <div class="text-sm text-gray-600">Weight</div>
+                            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
+                                <i class="fas fa-weight-hanging text-2xl text-yellow-400 mb-2"></i>
+                                <div class="text-2xl font-bold text-white"><%= catchItem.weight %> kg</div>
+                                <div class="text-sm text-gray-400">Weight</div>
                             </div>
                             <% if (catchItem.length) { %>
-                                <div class="bg-green-50 rounded-lg p-4 text-center">
-                                    <i class="fas fa-ruler-vertical text-2xl text-green-600 mb-2"></i>
-                                    <div class="text-2xl font-bold text-gray-900"><%= catchItem.length %> cm</div>
-                                    <div class="text-sm text-gray-600">Length</div>
+                                <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
+                                    <i class="fas fa-ruler-vertical text-2xl text-green-400 mb-2"></i>
+                                    <div class="text-2xl font-bold text-white"><%= catchItem.length %> cm</div>
+                                    <div class="text-sm text-gray-400">Length</div>
                                 </div>
                             <% } %>
-                            <div class="bg-purple-50 rounded-lg p-4 text-center">
-                                <i class="far fa-comment text-2xl text-purple-600 mb-2"></i>
-                                <div class="text-2xl font-bold text-gray-900"><%= catchItem.comments.length %></div>
-                                <div class="text-sm text-gray-600">Comments</div>
+                            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
+                                <i class="far fa-comment text-2xl text-purple-400 mb-2"></i>
+                                <div class="text-2xl font-bold text-white"><%= catchItem.comments.length %></div>
+                                <div class="text-sm text-gray-400">Comments</div>
                             </div>
-                            <div class="bg-red-50 rounded-lg p-4 text-center">
-                                <i class="far fa-heart text-2xl text-red-600 mb-2"></i>
-                                <div class="text-2xl font-bold text-gray-900"><%= catchItem.likes.length %></div>
-                                <div class="text-sm text-gray-600">Likes</div>
+                            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
+                                <i class="far fa-heart text-2xl text-red-400 mb-2"></i>
+                                <div class="text-2xl font-bold text-white"><%= catchItem.likes.length %></div>
+                                <div class="text-sm text-gray-400">Likes</div>
                             </div>
                         </div>
 
                         <!-- Description -->
                         <% if (catchItem.description) { %>
                             <div class="mb-6">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2">Description</h3>
-                                <p class="text-gray-700 leading-relaxed"><%= catchItem.description %></p>
+                                <h3 class="text-lg font-bold text-white mb-2">Description</h3>
+                                <p class="text-gray-300 leading-relaxed"><%= catchItem.description %></p>
                             </div>
                         <% } %>
 
                         <!-- Location -->
                         <div class="mb-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">
-                                <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>Location
+                            <h3 class="text-lg font-bold text-white mb-2">
+                                <i class="fas fa-map-marker-alt text-yellow-400 mr-2"></i>Location
                             </h3>
-                            <p class="text-gray-700"><%= catchItem.location.name %></p>
+                            <p class="text-gray-300"><%= catchItem.location.name %></p>
                         </div>
 
                         <!-- Additional Details -->
@@ -186,18 +186,18 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 <% if (catchItem.bait) { %>
                                     <div>
-                                        <h4 class="text-sm font-bold text-gray-900 mb-1">
-                                            <i class="fas fa-worm text-orange-500 mr-2"></i>Bait
+                                        <h4 class="text-sm font-bold text-white mb-1">
+                                            <i class="fas fa-worm text-orange-400 mr-2"></i>Bait
                                         </h4>
-                                        <p class="text-gray-700"><%= catchItem.bait %></p>
+                                        <p class="text-gray-300"><%= catchItem.bait %></p>
                                     </div>
                                 <% } %>
                                 <% if (catchItem.tackle) { %>
                                     <div>
-                                        <h4 class="text-sm font-bold text-gray-900 mb-1">
-                                            <i class="fas fa-fishing-rod text-blue-500 mr-2"></i>Tackle
+                                        <h4 class="text-sm font-bold text-white mb-1">
+                                            <i class="fas fa-fishing-rod text-blue-400 mr-2"></i>Tackle
                                         </h4>
-                                        <p class="text-gray-700"><%= catchItem.tackle %></p>
+                                        <p class="text-gray-300"><%= catchItem.tackle %></p>
                                     </div>
                                 <% } %>
                             </div>
@@ -205,33 +205,33 @@
 
                         <!-- Weather Info -->
                         <% if (catchItem.weather && catchItem.weather.condition) { %>
-                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
-                                <h3 class="text-lg font-bold text-gray-900 mb-3">
-                                    <i class="fas fa-cloud-sun text-yellow-500 mr-2"></i>Weather Conditions
+                            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                                <h3 class="text-lg font-bold text-white mb-3">
+                                    <i class="fas fa-cloud-sun text-yellow-400 mr-2"></i>Weather Conditions
                                 </h3>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                     <% if (catchItem.weather.temperature) { %>
                                         <div>
-                                            <span class="text-gray-600">Temperature:</span>
-                                            <span class="font-semibold text-gray-900 ml-1"><%= catchItem.weather.temperature %>°C</span>
+                                            <span class="text-gray-400">Temperature:</span>
+                                            <span class="font-semibold text-white ml-1"><%= catchItem.weather.temperature %>°C</span>
                                         </div>
                                     <% } %>
                                     <% if (catchItem.weather.condition) { %>
                                         <div>
-                                            <span class="text-gray-600">Condition:</span>
-                                            <span class="font-semibold text-gray-900 ml-1"><%= catchItem.weather.condition %></span>
+                                            <span class="text-gray-400">Condition:</span>
+                                            <span class="font-semibold text-white ml-1"><%= catchItem.weather.condition %></span>
                                         </div>
                                     <% } %>
                                     <% if (catchItem.weather.windSpeed) { %>
                                         <div>
-                                            <span class="text-gray-600">Wind:</span>
-                                            <span class="font-semibold text-gray-900 ml-1"><%= catchItem.weather.windSpeed %> km/h</span>
+                                            <span class="text-gray-400">Wind:</span>
+                                            <span class="font-semibold text-white ml-1"><%= catchItem.weather.windSpeed %> km/h</span>
                                         </div>
                                     <% } %>
                                     <% if (catchItem.weather.windDirection) { %>
                                         <div>
-                                            <span class="text-gray-600">Direction:</span>
-                                            <span class="font-semibold text-gray-900 ml-1"><%= catchItem.weather.windDirection %></span>
+                                            <span class="text-gray-400">Direction:</span>
+                                            <span class="font-semibold text-white ml-1"><%= catchItem.weather.windDirection %></span>
                                         </div>
                                     <% } %>
                                 </div>
@@ -241,9 +241,9 @@
                 </div>
 
                 <!-- Comments Section -->
-                <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
-                        <i class="far fa-comments text-blue-600 mr-2"></i>
+                <div class="bg-gray-900 rounded-xl shadow-lg p-8 mt-8 border border-gray-700">
+                    <h2 class="text-2xl font-bold text-white mb-6">
+                        <i class="far fa-comments text-yellow-400 mr-2"></i>
                         Comments (<span id="commentCount"><%= catchItem.comments.length %></span>)
                     </h2>
 
@@ -253,19 +253,19 @@
                             <div class="flex space-x-4">
                                 <img src="<%= currentUser.profilePicture || '/images/default-avatar.png' %>" 
                                      alt="<%= currentUser.username %>" 
-                                     class="w-10 h-10 rounded-full border-2 border-gray-200 flex-shrink-0">
+                                     class="w-10 h-10 rounded-full border-2 border-yellow-400 flex-shrink-0">
                                 <div class="flex-1">
                                     <textarea id="commentText" 
                                               name="text" 
                                               rows="3" 
-                                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none" 
+                                              class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition resize-none" 
                                               placeholder="Share your thoughts..."
                                               maxlength="500"
                                               required></textarea>
                                     <div class="flex justify-between items-center mt-2">
-                                        <span id="charCount" class="text-sm text-gray-500">0 / 500</span>
+                                        <span id="charCount" class="text-sm text-gray-400">0 / 500</span>
                                         <button type="submit" 
-                                                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition transform hover:scale-105 shadow-md">
+                                                class="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium transition transform hover:scale-105 shadow-md">
                                             <i class="fas fa-paper-plane mr-2"></i>Post Comment
                                         </button>
                                     </div>
@@ -273,11 +273,11 @@
                             </div>
                         </form>
                     <% } else { %>
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 text-center">
-                            <p class="text-gray-700">
-                                <a href="/auth/login" class="text-blue-600 hover:text-blue-800 font-semibold">Login</a> 
+                        <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-8 text-center">
+                            <p class="text-gray-300">
+                                <a href="/auth/login" class="text-yellow-400 hover:text-yellow-300 font-semibold">Login</a> 
                                 or 
-                                <a href="/auth/register" class="text-blue-600 hover:text-blue-800 font-semibold">Register</a> 
+                                <a href="/auth/register" class="text-yellow-400 hover:text-yellow-300 font-semibold">Register</a> 
                                 to leave a comment
                             </p>
                         </div>
@@ -287,16 +287,16 @@
                     <div id="commentsList" class="space-y-4">
                         <% if (catchItem.comments && catchItem.comments.length > 0) { %>
                             <% catchItem.comments.forEach(comment => { %>
-                                <div class="comment-card flex space-x-4 p-4 rounded-lg border border-gray-100">
+                                <div class="comment-card flex space-x-4 p-4 rounded-lg border border-gray-700 bg-gray-800">
                                     <img src="<%= comment.user.profilePicture || '/images/default-avatar.png' %>" 
                                          alt="<%= comment.user.username %>" 
-                                         class="w-10 h-10 rounded-full border-2 border-gray-200 flex-shrink-0">
+                                         class="w-10 h-10 rounded-full border-2 border-yellow-400 flex-shrink-0">
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between mb-1">
-                                            <a href="/users/<%= comment.user._id %>" class="font-semibold text-gray-900 hover:text-blue-600">
+                                            <a href="/users/<%= comment.user._id %>" class="font-semibold text-white hover:text-yellow-400">
                                                 <%= comment.user.username %>
                                             </a>
-                                            <time class="text-sm text-gray-500" datetime="<%= new Date(comment.createdAt).toISOString() %>">
+                                            <time class="text-sm text-gray-400" datetime="<%= new Date(comment.createdAt).toISOString() %>">
                                                 <%= new Date(comment.createdAt).toLocaleDateString('en-US', { 
                                                     month: 'short', 
                                                     day: 'numeric',
@@ -304,12 +304,12 @@
                                                 }) %>
                                             </time>
                                         </div>
-                                        <p class="text-gray-700"><%= comment.text %></p>
+                                        <p class="text-gray-300"><%= comment.text %></p>
                                     </div>
                                 </div>
                             <% }); %>
                         <% } else { %>
-                            <div class="text-center py-8 text-gray-500">
+                            <div class="text-center py-8 text-gray-400">
                                 <i class="far fa-comment-dots text-4xl mb-3 opacity-50"></i>
                                 <p>No comments yet. Be the first to comment!</p>
                             </div>
@@ -321,28 +321,28 @@
             <!-- Sidebar -->
             <div class="lg:col-span-1">
                 <!-- Map Preview -->
-                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">
-                        <i class="fas fa-map text-blue-600 mr-2"></i>Location
+                <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-6 border border-gray-700">
+                    <h3 class="text-lg font-bold text-white mb-4">
+                        <i class="fas fa-map text-yellow-400 mr-2"></i>Location
                     </h3>
-                    <div class="bg-gray-200 rounded-lg h-48 flex items-center justify-center">
-                        <i class="fas fa-map-marker-alt text-4xl text-red-500"></i>
+                    <div class="bg-gray-800 rounded-lg h-48 flex items-center justify-center">
+                        <i class="fas fa-map-marker-alt text-4xl text-yellow-400"></i>
                     </div>
-                    <p class="text-sm text-gray-600 mt-3">
-                        <i class="fas fa-map-marker-alt text-red-500 mr-1"></i>
+                    <p class="text-sm text-gray-300 mt-3">
+                        <i class="fas fa-map-marker-alt text-yellow-400 mr-1"></i>
                         <%= catchItem.location.name %>
                     </p>
-                    <p class="text-xs text-gray-500 mt-1">
+                    <p class="text-xs text-gray-400 mt-1">
                         Coordinates: <%= catchItem.location.coordinates[1].toFixed(4) %>, <%= catchItem.location.coordinates[0].toFixed(4) %>
                     </p>
                 </div>
 
                 <!-- Similar Catches -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">
-                        <i class="fas fa-fish text-blue-600 mr-2"></i>More from <%= catchItem.user.username %>
+                <div class="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-700">
+                    <h3 class="text-lg font-bold text-white mb-4">
+                        <i class="fas fa-fish text-yellow-400 mr-2"></i>More from <%= catchItem.user.username %>
                     </h3>
-                    <p class="text-sm text-gray-500 text-center py-4">
+                    <p class="text-sm text-gray-400 text-center py-4">
                         Coming soon...
                     </p>
                 </div>
@@ -351,11 +351,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
+    <footer class="bg-black border-t border-gray-800 mt-12">
         <div class="container mx-auto px-4 py-8">
-            <div class="text-center text-gray-600">
+            <div class="text-center text-gray-400">
                 <p class="text-sm">
-                    &copy; <%= new Date().getFullYear() %> FishBook. Made with <i class="fas fa-heart text-red-500"></i> by anglers, for anglers.
+                    &copy; <%= new Date().getFullYear() %> FishHub. Made with <i class="fas fa-heart text-yellow-400"></i> by anglers, for anglers.
                 </p>
             </div>
         </div>
@@ -384,13 +384,13 @@
                         likeCount.textContent = data.likes.length;
                         
                         if (this.classList.contains('liked')) {
-                            this.classList.remove('liked', 'bg-red-50', 'text-red-500');
-                            this.classList.add('bg-gray-100', 'text-gray-600');
+                            this.classList.remove('liked', 'bg-red-900', 'bg-opacity-50', 'text-red-400', 'border-red-700');
+                            this.classList.add('bg-gray-800', 'text-gray-300', 'border-gray-700');
                             icon.classList.remove('fas');
                             icon.classList.add('far');
                         } else {
-                            this.classList.add('liked', 'bg-red-50', 'text-red-500');
-                            this.classList.remove('bg-gray-100', 'text-gray-600');
+                            this.classList.add('liked', 'bg-red-900', 'bg-opacity-50', 'text-red-400', 'border-red-700');
+                            this.classList.remove('bg-gray-800', 'text-gray-300', 'border-gray-700');
                             icon.classList.remove('far');
                             icon.classList.add('fas');
                         }
